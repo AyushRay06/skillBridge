@@ -1,0 +1,225 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  fullName  String
+  email     String   @unique
+  password  String?
+
+  // OAuth
+  provider   String  @default("local") // "local" | "google" | "github"
+  providerId String?                   // OAuth provider's unique user ID
+  avatar     String?                   // Profile picture URL from provider
+
+  // Subscription plan — determines rate limits for cost-sensitive endpoints
+  subscriptionPlan      String    @default("free") // "free" | "pro" | "elite"
+  subscriptionExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resumes      Resume[]
+  profile      UserProfile?
+  applications Application[]
+  schedules    JobSchedule[]
+  payments     Payment[]
+  
+  @@map("users")
+}
+
+model Resume {
+  id        String   @id @default(cuid())
+  title     String   @default("My Resume")
+  
+  // Basic Info
+  fullName  String
+  phone     String?
+  email     String
+  github    String?
+  linkedin  String?
+  portfolio String?
+  
+  // All data stored as JSON for simplicity
+  skills      Json    // ["JavaScript", "React", "Node.js"]
+  experience  Json?   // [{ title, company, location, duration, points }]
+  projects    Json    // [{ name, tech, description }]
+  education   Json    // [{ degree, school, year }]
+  achievements Json?  // [{ title, description, date }] - NEW FIELD
+  jobDescription String @db.Text
+  latexCode     String? @db.Text
+  
+  // Relations
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("resumes")
+}
+
+model UserProfile {
+  id          String   @id @default(cuid())
+  
+  fullName    String
+  email       String
+  phone       String?
+  github      String?
+  linkedin    String?
+  portfolio   String?
+  
+  skills      Json     // ["JavaScript", "React", ...]
+  experience  Json?    // [{ title, company, location, duration, points }]
+  projects    Json     // [{ name, tech, description }]
+  education   Json     // [{ degree, school, year }]
+  achievements Json?   // [{ title, description, date }]
+  
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("user_profiles")
+}
+
+model Application {
+  id              String   @id @default(cuid())
+  
+  // Input
+  jobDescription  String   @db.Text
+  
+  // Parsed Job Data (structured JSON from parseJob node)
+  parsedJob       Json?
+  
+  // Match Analysis
+  matchScore      Float?
+  matchAnalysis   Json?    // { strengths: [], gaps: [], suggestions: [] }
+  
+  // Generated Outputs
+  tailoredResume  String?  @db.Text  // LaTeX code
+  coverLetter     String?  @db.Text
+  coldEmail       Json?    // { subject, body, recipientPlaceholder }
+  
+  // Status
+  status          String   @default("processing") // processing, completed, failed
+  
+  // Relations
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Reverse relation from DiscoveredJob (set when autopilot ran the pipeline)
+  discoveredJob   DiscoveredJob?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("applications")
+}
+
+// ====================== Job Autopilot ======================
+
+model JobSchedule {
+  id              String   @id @default(cuid())
+  name            String   @default("My Job Search")
+  isActive        Boolean  @default(true)
+
+  // Inngest cron expression e.g. "0 8 * * *" = daily 8 AM
+  cronExpression  String
+  timezone        String   @default("Asia/Kolkata")
+
+  // Search Filters
+  targetRoles     Json     // ["Frontend Developer", "React Developer"]
+  locations       Json     // ["Remote", "Bangalore"]
+  workType        String   @default("any")   // "remote","onsite","hybrid","any"
+  experienceLevel String   @default("any")   // "entry","mid","senior","any"
+  salaryMin       Int?
+  salaryMax       Int?
+  postAge         String   @default("24h")   // "24h","48h","7d"
+
+  // Pipeline Config
+  minMatchScore   Int      @default(60)      // Only apply if score >= this
+  maxApplications Int      @default(5)       // Max applications per run
+
+  // Run History (updated after each Inngest execution)
+  lastRunAt       DateTime?
+  lastRunStatus   String?   // "success","partial","failed","no_matches"
+  totalRuns       Int      @default(0)
+  totalApplied    Int      @default(0)
+
+  discoveredJobs  DiscoveredJob[]
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@map("job_schedules")
+}
+
+model DiscoveredJob {
+  id              String   @id @default(cuid())
+
+  // Raw job data from search API
+  title           String
+  company         String
+  location        String?
+  salary          String?
+  url             String?
+  source          String   // "jsearch","remotive"
+  postedAt        DateTime?
+  description     String   @db.Text
+
+  // AI analysis
+  matchScore      Float?
+  matchReason     String?  @db.Text
+
+  // Status lifecycle
+  status          String   @default("discovered")
+  // "discovered" → "qualified" → "applied" → "skipped" → "below_threshold"
+
+  // Link to Application record if pipeline was run
+  applicationId   String?  @unique
+  application     Application? @relation(fields: [applicationId], references: [id])
+
+  // Link to the schedule that discovered this job
+  scheduleId      String
+  schedule        JobSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  @@map("discovered_jobs")
+}
+
+// ====================== Razorpay Payments & Subscriptions ======================
+
+model Payment {
+  id             String    @id @default(cuid())
+  orderId        String    @unique  // Razorpay order ID (e.g., "order_...")
+  paymentId      String?   @unique  // Razorpay payment ID (e.g., "pay_...")
+  signature      String?            // Razorpay signature for verification
+  amount         Int                // Amount in subunit (e.g., 29900 = ₹299)
+  currency       String    @default("INR")
+  status         String    @default("created") // "created" | "captured" | "failed"
+  plan           String             // "pro" | "elite"
+  receipt        String?
+  notes          Json?
+
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("payments")
+}

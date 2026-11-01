@@ -1,0 +1,730 @@
+\documentclass[12pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{whale}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% --- Presentation Details ---
+\title{AI-Powered Job Application Automation Platform}
+\author{
+\footnotesize
+\textbf{Presented by Group 10}\\
+Aditya Sahu (CSE-22/01) \\
+Aman Haque (CSE-22/02) \\
+Ayush Kumar Ray (CSE-22/07) \\
+Md. Noor Ali (CSE-22/22)
+}
+
+\institute{
+Department of Computer Science and Engineering\\
+DUIET, Dibrugarh University\\[0.5em]
+Under the Supervision of\\
+\textbf{Dr. Abhijit Boruah}\\
+Assistant Professor, DUIET
+}
+
+\setbeamerfont{author}{size=\footnotesize}
+\setbeamerfont{institute}{size=\small}
+
+\setbeamertemplate{footline}{
+  \leavevmode
+  \hbox{
+    \begin{beamercolorbox}[wd=.90\paperwidth,ht=2.5ex,dp=1ex,left]{title in head/foot}
+      \hspace{0.3cm}\insertshorttitle
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[wd=.10\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}
+      \insertframenumber/\inserttotalframenumber\hspace{0.3cm}
+    \end{beamercolorbox}
+  }
+}
+\begin{document}
+
+\begin{frame}[plain]
+
+\centering
+
+\begin{beamercolorbox}[
+    wd=0.95\paperwidth,
+    sep=8pt,
+    center,
+    rounded=true,
+    shadow=true
+]{title}
+    \usebeamerfont{title}
+    \color{white}
+    \inserttitle
+\end{beamercolorbox}
+
+\vspace{0.25cm}
+
+\includegraphics[width=2cm]{dibrugarh_logo.png}
+
+\vspace{0.15cm}
+
+{\usebeamerfont{author}\insertauthor\par}
+
+\vspace{0.1cm}
+
+{\usebeamerfont{institute}\insertinstitute\par}
+
+\end{frame}
+
+
+% --- Global Font Size Enforcement ---
+\setbeamerfont{itemize/enumerate body}{size=\normalsize}
+\setbeamerfont{itemize/enumerate subbody}{size=\normalsize}
+\setbeamerfont{block title}{size=\normalsize}
+\setbeamerfont{block body}{size=\normalsize}
+
+\begin{document}
+
+% --- Table of Contents Slide ---
+\begin{frame}{Table of Contents}
+    \tableofcontents
+\end{frame}
+
+\section{Introduction}
+
+% --- Slide 1: Introduction & Problem Statement ---
+\begin{frame}[allowframebreaks]{Introduction \& Problem Statement}
+    \begin{block}{Introduction}
+        \begin{itemize}
+            \item Modern job seeking demands complex multi-step workflows: generating tailored resumes, crafting personalized cover letters, and setting up cold outreach.
+            \item Pre-trained LLMs lack optimization for domain-specific professional formatting.
+            
+        \end{itemize}
+    \end{block}
+    
+    \framebreak 
+    
+    \begin{block}{The Problem Statement}
+        \begin{itemize}
+            \item \textbf{System Constraints:} Existing resume builders are rigid, while traditional AI tools rely on expensive commercial APIs or fragile prompt engineering, resulting in unpredictable layouts.
+            \item \textbf{Job Search Inefficiency:} Candidates must manually filter roles across multiple portals based on salary, tech stack, and qualifications. Scattered formats make comparisons difficult.
+            \item \textbf{High Overhead:} Tailoring ATS-friendly resumes for specific job descriptions is heavily repetitive, cognitively taxing, and prone to human error.
+            \item \textbf{Outreach Velocity:} Manually gathering profile links significantly slows down application momentum.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{Literature Review}
+
+\begin{frame}{Literature Review (1/2)}
+\footnotesize
+
+\begin{itemize}
+
+\item \textbf{Resume Screening Using LLMs} [1] introduced semantic candidate ranking using vector embeddings and similarity matching with job descriptions.
+
+\item \textbf{AI-Powered Resume Evaluation System} [2] focused on ATS compatibility, resume quality assessment, and improvement recommendations.
+
+\item \textbf{LLM Agents in Recruitment} [3] proposed agent-based resume classification, candidate grading, and automated recruitment support.
+
+\item \textbf{ResumeFlow} [4] utilized GPT-4 and Gemini for personalized resume refinement and job-specific customization.
+
+\item \textbf{Professional Resume Generator} [5] employed BERT-based techniques for ATS optimization and resume enhancement.
+
+\end{itemize}
+
+\vspace{0.2cm}
+
+
+
+\end{frame}
+
+\begin{frame}{Literature Review (2/2)}
+\footnotesize
+
+\begin{itemize}
+
+\item \textbf{CareerCorpus} [6] and \textbf{ResumeBench} [8] provided datasets and benchmarks for resume parsing and information extraction.
+
+\item \textbf{Synthetic Resume Generation} [7] demonstrated the effectiveness of LLM-generated resumes for dataset augmentation.
+
+\item \textbf{Mistral-7B} [9] introduced an efficient transformer architecture with strong language generation capabilities.
+
+\item \textbf{QLoRA} [10] enabled memory-efficient fine-tuning through 4-bit NF4 quantization and low-rank adaptation.
+
+\item \textbf{LangGraph} [11] provided a framework for building stateful multi-agent workflows suitable for automation pipelines.
+
+\end{itemize}
+
+\vspace{0.2cm}
+
+
+
+\end{frame}
+
+\section{Research Gap}
+
+% --- Slide 2: Research Gap ---
+\begin{frame}{Research Gap}
+    \begin{block}{Research Gap}
+        \begin{itemize}
+            \item Existing literature primarily targets the employer-side (automated resume screening, parsing, and candidate ranking frameworks).
+            \item There is a critical lack of open-source, fine-tuned localized language models dedicated to generating structured, compilable LaTeX application documents.
+            \item No unified infrastructure exists that combines custom-trained models with multi-agent pipelines to enable autonomous job discovery, resume tailoring, and one-click job application.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\section{Objectives}
+
+% --- Slide 2b: Project Objectives ---
+\begin{frame}{Project Objectives}
+
+\small
+
+\begin{block}{Project Objectives}
+\begin{itemize}
+    \item Automate job application.
+    \item Generate ATS-friendly resumes.
+    \item Create personalized cover letters and outreach emails.
+    \item Recommend suitable jobs.
+    \item Provide a complete one-click application platform using a fine-tuned Mistral-7B model.
+
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\section{Dataset}
+
+\begin{frame}{Dataset Overview}
+\small
+\begin{itemize}
+    \item Custom instruction-tuning dataset for ATS-friendly resume generation.
+    
+    \item Contains \textbf{10,357} training samples in JSONL format.
+    
+    \item Hybrid dataset:
+    \begin{itemize}
+        \item \textbf{40\%} real-world resumes
+        \item \textbf{60\%} synthetic resumes
+    \end{itemize}
+    
+    \item Each sample contains:
+    \begin{itemize}
+        \item \textbf{Instruction}: Resume generation task
+        \item \textbf{Input}: Candidate profile information
+        \item \textbf{Output}: ATS-friendly LaTeX resume
+    \end{itemize}
+    
+    \item Domains covered:
+    \begin{itemize}
+        \item Software Engineering, Cloud Computing \& DevOps
+        \item Web Development
+        \item Data Science
+        \item Machine Learning
+    \end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}{Dataset Preparation Process}
+\small
+
+\begin{columns}[T]
+
+% Left Side
+\column{0.67\textwidth}
+
+\begin{enumerate}
+    \item Generated and collected structured candidate profiles.
+
+    \item Standardized resume sections such as Education, Experience, Projects, Skills, and Achievements.
+
+    \item Converted candidate information into instruction-response training pairs.
+
+    \item Generated ATS-friendly resumes using a predefined LaTeX template.
+
+    \item Removed incomplete samples and validated formatting consistency.
+
+    \item Stored the final dataset in JSONL format for supervised fine-tuning.
+\end{enumerate}
+
+% Right Side
+\column{0.33\textwidth}
+
+\footnotesize
+\textbf{Training Record Structure}
+
+\vspace{0.2cm}
+
+\ttfamily
+\scriptsize
+
+\{
+\vspace{0.05cm}
+
+\hspace*{0.2cm}"instruction": "Generate ATS-friendly resume",
+
+\vspace{0.05cm}
+
+\hspace*{0.2cm}"input": "Candidate profile details",
+
+\vspace{0.05cm}
+
+\hspace*{0.2cm}"output": "LaTeX resume code"
+
+\vspace{0.05cm}
+
+\}
+
+\end{columns}
+
+\end{frame}
+
+\section{Model Architecture}
+
+\begin{frame}[plain]
+\frametitle{Mistral 7B Architecture and Implementation}
+
+\centering
+
+\includegraphics[
+width=\paperwidth,
+height=0.9\paperheight,
+keepaspectratio
+]{model_architecture.jpeg}
+
+\end{frame}
+
+
+
+\begin{frame}{Mistral-7B Fine-Tuning}
+\small
+
+\begin{block}{Tokenization using Mistral Tokenizer}
+\footnotesize
+\begin{itemize}
+    \item Converted resume text into numerical token IDs using the Mistral tokenizer.
+    
+    \item Applied subword tokenization to efficiently handle technical terms, skills, and domain-specific vocabulary.
+    
+    \item Generated input token sequence:
+    \[
+    X = [x_1, x_2, x_3, \ldots, x_n]
+    \]
+    
+    \item Created attention masks to distinguish valid tokens from padding tokens.
+    
+    \item Produced input-output tensor pairs for supervised fine-tuning.
+    
+    \item Enabled efficient processing of long resume documents while preserving contextual information.
+\end{itemize}
+\end{block}
+
+\vspace{0.2cm}
+
+\textbf{Tokenization Workflow}
+
+\[
+\text{Resume Text}
+\rightarrow
+\text{Tokenizer}
+\rightarrow
+\text{Token IDs}
+\rightarrow
+\text{Tensors}
+\rightarrow
+\text{Mistral-7B}
+\]
+
+\end{frame}
+
+\section{Fine-Tuning Methodology}
+
+% --- Slide 4: ML Training & Implementation ---
+\begin{frame}{QLoRA Quantization Strategy}
+\vspace{-0.2cm}
+\footnotesize
+\begin{columns}[T]
+
+% Left Column
+\column{0.45\textwidth}
+\begin{itemize}\setlength\itemsep{0.05em}
+    \item Applied \textbf{QLoRA} to fine-tune Mistral-7B efficiently.
+    \item Quantized model weights to \textbf{4-bit NF4}, reducing VRAM requirements.
+    \item Kept pretrained weights frozen and trained only low-rank adapter matrices.
+    \item Reduced memory usage from \textbf{112 GB} to \textbf{14 GB}.
+    \item Achieved \textbf{87.5\% VRAM reduction} while maintaining model performance.
+\end{itemize}
+\vspace{0.08cm}
+\[
+\text{4-bit NF4} \rightarrow \text{LoRA} \rightarrow \text{Fine-Tuning}
+\]
+\vspace{0.05cm}
+{\scriptsize\textbf{Performance Comparison}}\\[0.1cm]
+{\tiny
+\begin{tabular}{@{}lcc@{}}
+\hline
+\textbf{Metric} & \textbf{Full FT} & \textbf{QLoRA} \\
+\hline
+VRAM Usage     & 112 GB   & 14 GB   \\
+ROUGE-L        & 0.61     & 0.59    \\
+Training Time  & $\sim$8h & $\sim$3h \\
+Output Quality & High     & Comparable \\
+\hline
+\end{tabular}
+}
+
+% Right Column
+\column{0.55\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=0.38\textheight,keepaspectratio]{qlora_vram.png}
+\\[0.05cm]
+{\scriptsize VRAM comparison between Full Fine-Tuning and QLoRA.}
+\\[0.1cm]
+\textbf{LoRA Update Rule}
+\[
+W' = W + BA
+\]
+{\scriptsize
+$W$ = Frozen pretrained weights \qquad
+$A,B$ = Trainable low-rank matrices
+}
+\end{columns}
+\end{frame}
+
+\begin{frame}{LoRA Adaptation}
+Low-rank trainable matrices injected into linear modules instead of full-parameter updates:
+\[ W' = W + \Delta W = W_q + \frac{\alpha}{r}(B \cdot A) \]
+\begin{itemize}
+  \item $W \in \mathbb{R}^{d\times k}$: frozen base weight
+  \item $B \in \mathbb{R}^{d\times r}$, $A \in \mathbb{R}^{r \times k}$: trainable low-rank matrices ($r \ll \min(d,k)$)
+  \item $\alpha$: scaling hyperparameter
+\end{itemize}
+
+\begin{table}
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Epochs & 10 \\
+Batch Size / Grad. Accum. & 2 / 8 \\
+Learning Rate & $2\times10^{-5}$ \\
+LoRA Rank $r$ / Alpha $\alpha$ & 16 / 32 \\
+LoRA Dropout & 0.05 \\
+Optimizer & Paged AdamW (32-bit) \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+\section{Results and Evaluation}
+
+\begin{frame}{Results and Evaluation}
+\footnotesize
+\begin{columns}[T]
+
+% Left Column - Metrics Explanation
+\column{0.58\textwidth}
+\textbf{Evaluation Metrics}\\[0.15cm]
+\begin{itemize}\setlength\itemsep{0.4em}
+    \item \textbf{BLEU}\\[0.05cm]
+    {\scriptsize Evaluates generated text by comparing it with human-written reference text based on n-gram overlap.}
+
+    \item \textbf{ROUGE-L}\\[0.05cm]
+    {\scriptsize Measures the quality of generated text using the longest common subsequence between generated and reference content.}
+
+    \item \textbf{BERTScore}\\[0.05cm]
+    {\scriptsize Measures semantic similarity between generated and reference text using contextual embeddings from transformer models.}
+\end{itemize}
+
+% Right Column - Table
+\column{0.42\textwidth}
+\centering
+\textbf{Resume Generation Performance}\\[0.2cm]
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Metric} & \textbf{Score} \\
+\hline
+BLEU          & 0.3921 \\
+ROUGE-1       & 0.6908 \\
+ROUGE-2       & 0.6859 \\
+ROUGE-L       & 0.6904 \\
+BERTScore F1  & \textbf{0.9542} \\
+\hline
+\end{tabular}
+
+\vspace{0.25cm}
+\raggedright
+\textbf{}\\[0.1cm]
+\begin{itemize}\setlength\itemsep{0.05em}
+    \item BERTScore F1 of \textbf{0.9542} indicates high semantic similarity between generated and reference resumes.
+\end{itemize}
+
+\end{columns}
+\end{frame}
+
+\begin{frame}{Comparative Analysis with Existing Research}
+
+\centering
+
+\includegraphics[
+width=0.98\textwidth,
+height=1.0\textheight,
+keepaspectratio
+]{comparative_analysis.png}
+
+\end{frame}
+
+% ============================================================
+% NEW SECTION: System Implementation
+% ============================================================
+
+\section{System Implementation}
+
+\begin{frame}{Platform Architecture \& Tech Stack (1/2)}
+\small
+\begin{block}{Frontend Architecture}
+\begin{itemize}\setlength\itemsep{0.3em}
+    \item \textbf{Next.js 16 (React 19):} Server-Side Rendering (SSR) for fast initial load times and optimized routing.
+    \item \textbf{TypeScript:} Enforces strict type safety across components, reducing runtime errors.
+    \item \textbf{Tailwind CSS \& UI Components:} Delivers a highly responsive, modern, and accessible user interface using utility-first styling and custom animated components.
+    \item \textbf{OAuth 2.0 Integration:} Secure, frictionless user authentication via Google and GitHub.
+\end{itemize}
+\end{block}
+
+\vspace{0.2cm}
+
+\begin{block}{Backend Architecture}
+\begin{itemize}\setlength\itemsep{0.3em}
+    \item \textbf{Node.js + Express.js:} High-performance RESTful API to handle client requests and route logic.
+    \item \textbf{Prisma ORM + PostgreSQL:} Robust data modeling and structured persistence layer for user profiles, resumes, and job history.
+    \item \textbf{JWT Authentication:} Stateless, scalable, and secure session management.
+    \item \textbf{Inngest:} Serverless event-driven scheduling for reliable background job execution.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Platform Architecture \& Tech Stack (2/2)}
+\small
+\begin{block}{AI \& Orchestration Layer}
+\begin{itemize}\setlength\itemsep{0.3em}
+    \item \textbf{LangGraph:} Manages complex, stateful multi-agent workflows, orchestrating the step-by-step logic of job application generation.
+    \item \textbf{LangChain:} Abstracts LLM interactions and creates dynamic prompt chains for data extraction and document drafting.
+    \item \textbf{Gemini Flash / Pro:} Acts as the primary inference engine for parsing job descriptions, ranking roles, and drafting cover letters/emails.
+    \item \textbf{Fine-tuned Mistral-7B:} Specialized model exclusively deployed for structured, ATS-compliant LaTeX resume generation.
+\end{itemize}
+\end{block}
+
+\vspace{0.2cm}
+
+\begin{block}{Job Discovery \& Aggregation}
+\begin{itemize}\setlength\itemsep{0.3em}
+    \item \textbf{JSearch API (Primary):} Aggregates real-time job listings from major platforms like Google Jobs, LinkedIn, and Indeed.
+    \item \textbf{Remotive API (Fallback):} Provides supplementary listings focused specifically on remote and distributed roles.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Multi-Agent Pipeline Design: One-Click Apply}
+\small
+
+\begin{block}{Pipeline Workflow (LangGraph)}
+\centering
+\vspace{0.15cm}
+\footnotesize
+\texttt{parseJob} $\rightarrow$ \texttt{scoreMatch} $\rightarrow$ \texttt{tailorResume} $\rightarrow$ \texttt{generateCoverLetter} $\rightarrow$ \texttt{draftColdEmail}
+\vspace{0.1cm}
+\end{block}
+
+\vspace{0.2cm}
+
+\textbf{Node Functions \& Asset Generation}
+\begin{itemize}\setlength\itemsep{0.4em}
+    \item \textbf{parseJob:} Extracts critical skills, requirements, and keywords from the raw job description using structured LLM output.
+    \item \textbf{scoreMatch:} Computes a quantitative ATS match score (0--100) by comparing the candidate's master profile against parsed job requirements.
+    \item \textbf{tailorResume:} Synthesizes the parsed requirements and master profile to generate a highly targeted, compilable \LaTeX{} resume.
+    \item \textbf{generateCoverLetter:} Drafts a personalized 300-word cover letter addressing specific pain points mentioned in the job post.
+    \item \textbf{draftColdEmail:} Composes a concise, punchy outreach email optimized for recruiter engagement.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Multi-Agent Pipeline Design: Job Autopilot}
+\small
+
+\begin{block}{Pipeline Workflow (Scheduled Execution via Inngest)}
+\centering
+\vspace{0.15cm}
+\footnotesize
+\texttt{buildSearchQuery} $\rightarrow$ \texttt{searchJobs} $\rightarrow$ \texttt{filterAndRank} $\rightarrow$ \texttt{batchApply} $\rightarrow$ \texttt{generateReport}
+\vspace{0.1cm}
+\end{block}
+
+\vspace{0.2cm}
+
+\textbf{Node Functions \& Automation Logic}
+\begin{itemize}\setlength\itemsep{0.4em}
+    \item \textbf{buildSearchQuery:} LLM analyzes the user profile to formulate 2--3 highly focused, board-optimized search queries.
+    \item \textbf{searchJobs:} Executes queries across JSearch \& Remotive APIs, deduplicates listings, and limits results to maintain efficiency.
+    \item \textbf{filterAndRank:} LLM evaluates and scores each discovered job against the master profile, filtering out low-match roles (score $<$ 70).
+    \item \textbf{batchApply:} Iteratively triggers the One-Click Apply pipeline for every qualified job discovered in the batch.
+    \item \textbf{generateReport:} Compiles a structured, comprehensive summary report detailing all jobs analyzed and application assets generated.
+\end{itemize}
+
+\end{frame}
+
+% ============================================================
+% END NEW SECTION
+% ============================================================
+
+\section{Conclusion}
+
+\begin{frame}{Conclusion}
+
+\small
+
+\begin{itemize}
+    \item Successfully developed an end-to-end \textbf{AI-powered job automation platform} that seamlessly bridges the gap between job discovery and application asset generation.
+    \item The \textbf{One-Click Apply} pipeline dramatically reduces the cognitive load on candidates by autonomously tailoring \LaTeX{} resumes, cover letters, and cold outreach emails for any given job description.
+    \item The \textbf{Job Autopilot} subsystem introduces fully scheduled, background job discovery, utilizing LLMs to dynamically formulate search queries, rank relevance, and execute batch applications without human intervention.
+    \item By integrating a robust \textbf{LangGraph multi-agent architecture} with a modern Next.js/Node.js stack, the system offers high scalability, reliability, and an intuitive user experience.
+    \item While leveraging a highly efficient \textbf{fine-tuned Mistral-7B} for specialized resume generation (achieving a BERTScore F1 of 0.9542), the platform's true innovation lies in its orchestration of multiple APIs and agentic workflows.
+    \item \textbf{Future work} includes incorporating user feedback loops, expanding to additional job board integrations, and exploring real-time tracking of application submission statuses.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks,noframenumbering]{References}
+\scriptsize
+
+\begin{thebibliography}{99}
+
+\bibitem{ref1}
+E. Salakar, Y. Shah, J. Rai, J. Wadmare, and A. Salian,
+``Resume Screening Using Large Language Models,''
+ICAST, IEEE, 2023.
+
+\bibitem{ref2}
+G. Hendre, S. Bhiware, A. Darwajkar, and A. S. Mali,
+``AI-Powered Resume Evaluation System,''
+IJARSCT, 2025.
+
+\bibitem{ref3}
+C. Gan, Q. Zhang, and T. Mori,
+``Application of LLM Agents in Recruitment: A Novel Framework for Resume Screening,''
+arXiv, 2024.
+
+\bibitem{ref4}
+S. B. Zinjad et al.,
+``ResumeFlow: An LLM-Facilitated Pipeline for Personalized Resume Generation and Refinement,''
+SIGIR, 2024.
+
+\bibitem{ref5}
+M. V. Reddy et al.,
+``Professional Resume Generator,''
+Parul University, 2025.
+
+\bibitem{ref6}
+M. S. Chowdhury, A. F. Chowdhury, A. Banu, and R. Hossain,
+``CareerCorpus: A Comprehensive Dataset of Annotated Resumes,''
+Data in Brief, 2026.
+
+\bibitem{ref7}
+P. Skondras, P. Zervas, and G. Tzimas,
+``Generating Synthetic Resume Data with Large Language Models for Enhanced Job Description Classification,''
+Future Internet, 2023.
+
+\bibitem{ref8}
+Z. Ling, H. Zhang, J. Cui, Z. Wu, X. Sun, G. Li, and X. He,
+``Beyond Human Labels: A Multi-Linguistic Auto-Generated Benchmark for Evaluating Large Language Models on Resume Parsing,''
+EMNLP, 2025.
+
+\bibitem{ref9}
+A. Q. Jiang et al.,
+``Mistral 7B,''
+arXiv:2310.06825, 2023.
+
+\bibitem{ref10}
+T. Dettmers, A. Pagnoni, A. Holtzman, and L. Zettlemoyer,
+``QLoRA: Efficient Finetuning of Quantized LLMs,''
+2023.
+
+\bibitem{ref11}
+LangChain Inc.,
+``LangGraph: Building Stateful, Multi-Actor Applications with LLMs,''
+2024.
+
+\bibitem{ref12}
+Inngest Inc.,
+``Inngest: Serverless Background Functions and Workflow Engine,''
+2024.
+
+\bibitem{ref13}
+H. Touvron et al.,
+``LLaMA: Open and Efficient Foundation Language Models,''
+2023.
+
+\bibitem{ref14}
+P. Dubey, S. Yadav, and S. Gawande,
+``Resume Generator Using AI,''
+2023.
+
+\bibitem{ref15}
+H. Saiyad, J. Khan, A. A. Khan, and A. Pathan,
+``AI-Powered Resume Builder: Automating Professional Resume Generation Using NLP and Machine Learning,''
+IJMRSET, 2025.
+
+\bibitem{ref16}
+A. Dubey, N. Dhanda, A. Lovewanshi, and V. Yadav,
+``Resume2Role: Intelligent Resume Parsing and Domain Prediction Using NLP and Classification Models,''
+ITM Web of Conferences, 2026.
+
+\bibitem{ref17}
+S. T. Gopalakrishna and V. Varadharajan,
+``Automated Tool for Resume Classification Using Semantic Analysis,''
+IJAIA, 2019.
+
+\bibitem{ref18}
+R. Pal, S. Shaikh, S. Satpute, and S. Bhagwat,
+``Resume Classification Using Various Machine Learning Algorithms,''
+ITM Web of Conferences, 2022.
+
+\bibitem{ref19}
+A. Heakl, Y. Mohamed, N. Mohamed, A. Elsharkawy, and A. Zaky,
+``R\'esum\'eAtlas: Revisiting Resume Classification with Large-Scale Datasets and Large Language Models,''
+Procedia Computer Science, 2024.
+
+\bibitem{ref20}
+C. G. Onukwugha, C. I. Ofoegbu, O. B. Aliche, and C. U. Betrand,
+``Resume Optimization Model Using Machine Learning Techniques,''
+International Journal of Intelligent Information Systems, 2024.
+
+\bibitem{ref21}
+S. Efeoglu and A. Paschke,
+``Fine-Tuning Large Language Models for Relation Extraction within a Retrieval-Augmented Generation Framework,''
+XLLM, 2025.
+
+\bibitem{ref22}
+S. M. Wong, H. Leung, and K. Y. Wong,
+``Efficiency in Language Understanding and Generation: An Evaluation of Four Open-Source Large Language Models,''
+Research Square, 2024.
+
+\bibitem{ref23}
+A. Mullick, S. Bose, R. Saha, A. K. Bhowmick, A. Vempaty,
+P. Goyal, N. Ganguly, P. Dey, and R. Kokku,
+``Leveraging the Power of LLMs: A Fine-Tuning Approach for High-Quality Aspect-Based Summarization,''
+arXiv, 2024.
+
+\end{thebibliography}
+
+\end{frame}
+
+\begin{frame}{}
+\centering
+\vfill
+
+{\Huge \textbf{Thank You}}
+
+\vfill
+\end{frame}
+\end{document}

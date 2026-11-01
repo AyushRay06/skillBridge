@@ -1,0 +1,113 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+\usepackage{fontawesome}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\fancyhf{} 
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\oddsidemargin}{-0.75in}
+\addtolength{\evensidemargin}{-0.75in}
+\addtolength{\textwidth}{1.3in}
+\addtolength{\topmargin}{-0.8in}
+\addtolength{\textheight}{1.2in}
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0.02in}
+
+\titleformat{\section}{
+  \vspace{-12pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-6pt}]
+
+\pdfgentounicode=1
+
+
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-5pt}}
+  }
+}
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-4pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{\footnotesize #1} & \footnotesize #2 \\
+      \textit{\scriptsize #3} & \textit{\scriptsize #4}  \\
+    \end{tabular*}\vspace{-5.4pt}
+}
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\scriptsize #1} & \textit{\scriptsize #2} \\
+    \end{tabular*}\vspace{-6pt}
+}
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \scriptsize #1 & \scriptsize #2  \\
+    \end{tabular*}\vspace{-6pt}
+}
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-3pt}}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-4pt}}
+
+
+\begin{document}
+\begin{center}
+    \textbf{\Huge \scshape [FULL NAME]} \\ \vspace{1pt}
+    \small [PHONE] $|$ \href{mailto:[EMAIL]}{ \underline{[EMAIL]}} $|$ 
+    \href{[PORTFOLIO URL]}{ \underline{[PORTFOLIO TEXT]}} $|$
+    \href{[GITHUB URL]}{\underline{[GITHUB TEXT]}} $|$
+    \href{[LINKEDIN URL]}{ \underline{[LINKEDIN TEXT]}} 
+\end{center}
+
+
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small
+    \item \textbf{Languages:} [LANGUAGE SKILLS]
+    \item \textbf{Frontend:} [FRONTEND SKILLS]
+    \item \textbf{Backend:} [BACKEND SKILLS]
+    \item \textbf{Tools:} [TOOLS SKILLS]
+    \item \textbf{Database:} [DATABASE SKILLS]
+ \end{itemize}
+
+\section{Experience}
+  \resumeSubHeadingListStart
+[EXPERIENCE CONTENT]
+  \resumeSubHeadingListEnd
+
+\section{Projects}
+    \resumeSubHeadingListStart
+[PROJECTS CONTENT]
+    \resumeSubHeadingListEnd
+
+\section{Achievements and Volunteering Contributions}
+[ACHIEVEMENTS CONTENT]
+
+\section{Education}
+  \resumeSubHeadingListStart
+       \resumeSubheading
+  {[DEGREE]}{[DATE]}
+  {[UNIVERSITY]}{[LOCATION]}
+  \resumeSubHeadingListEnd
+  \resumeSubHeadingListEnd
+
+\end{document}

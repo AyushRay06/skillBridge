@@ -5,6 +5,20 @@ export const axiosAPI = axios.create({
   withCredentials: true,
 });
 
+// Attach Authorization header if token exists in localStorage (essential for cross-origin setups)
+axiosAPI.interceptors.request.use(
+  (config) => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (token && !config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Add request interceptor to include token from cookie
 axiosAPI.interceptors.response.use(
   (response) => response,

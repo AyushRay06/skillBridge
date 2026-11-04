@@ -34,6 +34,22 @@ const GitHubIcon = () => (
 );
 
 export function OAuthButtons() {
+  const [returnTo, setReturnTo] = React.useState("");
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setReturnTo(window.location.origin);
+    }
+  }, []);
+
+  const googleUrl = returnTo
+    ? `${API_URL}/auth/google?return_to=${encodeURIComponent(returnTo)}`
+    : `${API_URL}/auth/google`;
+
+  const githubUrl = returnTo
+    ? `${API_URL}/auth/github?return_to=${encodeURIComponent(returnTo)}`
+    : `${API_URL}/auth/github`;
+
   return (
     <>
       {/* Divider */}
@@ -51,14 +67,14 @@ export function OAuthButtons() {
       {/* OAuth Buttons */}
       <div className="grid grid-cols-2 gap-3">
         <a
-          href={`${API_URL}/auth/google`}
+          href={googleUrl}
           className="flex items-center justify-center gap-2.5 h-10 border border-border/80 bg-muted/10 text-xs font-mono uppercase tracking-wider text-foreground hover:bg-muted/30 hover:border-foreground/40 transition-colors"
         >
           <GoogleIcon />
           <span>Google</span>
         </a>
         <a
-          href={`${API_URL}/auth/github`}
+          href={githubUrl}
           className="flex items-center justify-center gap-2.5 h-10 border border-border/80 bg-muted/10 text-xs font-mono uppercase tracking-wider text-foreground hover:bg-muted/30 hover:border-foreground/40 transition-colors"
         >
           <GitHubIcon />

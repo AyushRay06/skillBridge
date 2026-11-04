@@ -63,20 +63,31 @@ export const findOrCreateOAuthUser = async (profile, provider) => {
  * Generates a JWT cookie (same as email/password login) and redirects to frontend.
  */
 export const handleOAuthCallback = (req, res) => {
+  // Determine target frontend URL dynamically from state or env
+  let targetFrontend = (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/+$/, "");
+  if (req.query.state) {
+    try {
+      const decoded = JSON.parse(Buffer.from(req.query.state, "base64").toString("utf-8"));
+      if (decoded.returnTo) {
+        targetFrontend = decoded.returnTo.replace(/\/+$/, "");
+      }
+    } catch (e) {}
+  }
+
   try {
     const user = req.user;
 
     if (!user) {
-      return res.redirect(`${FRONTEND_URL}/login?error=oauth_failed`);
+      return res.redirect(`${targetFrontend}/login?error=oauth_failed`);
     }
 
-    // Generate the same JWT cookie used by email/password login
-    generateToken(user.id, res);
+    // Generate the JWT cookie used by login
+    const token = generateToken(user.id, res);
 
-    // Redirect to frontend dashboard
-    res.redirect(`${FRONTEND_URL}/dashboard`);
+    // Redirect to frontend dashboard on the originating domain with token param
+    res.redirect(`${targetFrontend}/dashboard?token=${token}`);
   } catch (error) {
     console.log("Error in OAuth callback:", error.message);
-    res.redirect(`${FRONTEND_URL}/login?error=oauth_failed`);
+    res.redirect(`${targetFrontend}/login?error=oauth_failed`);
   }
 };

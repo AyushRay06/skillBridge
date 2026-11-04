@@ -5,6 +5,8 @@ export interface LandingTranslations {
     pipeline: string;
     telemetry: string;
     platform: string;
+    campus: string;
+    multimodal: string;
     testimonials: string;
     pricing: string;
     faq: string;
@@ -71,6 +73,32 @@ export interface LandingTranslations {
     f2: { tag: string; title: string; desc: string; spec: string; cta: string };
     f3: { tag: string; title: string; desc: string; spec: string; cta: string };
   };
+  campus: {
+    sectionTag: string;
+    heading: string;
+    subheading: string;
+    badge: string;
+    readinessTitle: string;
+    readinessSubtitle: string;
+    mockTitle: string;
+    mockSubtitle: string;
+    c1: { tag: string; title: string; desc: string; spec: string; cta: string };
+    c2: { tag: string; title: string; desc: string; spec: string; cta: string };
+    c3: { tag: string; title: string; desc: string; spec: string; cta: string };
+    whatsappBanner: { title: string; desc: string; cta: string };
+  };
+  multimodal: {
+    sectionTag: string;
+    heading: string;
+    subheading: string;
+    badge: string;
+    providersHeading: string;
+    capabilitiesHeading: string;
+    m1: { tag: string; title: string; desc: string; spec: string };
+    m2: { tag: string; title: string; desc: string; spec: string };
+    m3: { tag: string; title: string; desc: string; spec: string };
+    m4: { tag: string; title: string; desc: string; spec: string };
+  };
   testimonials: {
     sectionTag: string;
     heading: string;
@@ -132,6 +160,8 @@ export const LANDING_TRANSLATIONS: Record<LandingLang, LandingTranslations> = {
       pipeline: "Pipeline",
       telemetry: "Telemetry",
       platform: "Platform",
+      campus: "Career Campus",
+      multimodal: "Multimodal LLMs",
       testimonials: "Testimonials",
       pricing: "Pricing",
       faq: "FAQ",
@@ -164,8 +194,11 @@ export const LANDING_TRANSLATIONS: Record<LandingLang, LandingTranslations> = {
       events: [
         "DISCOVERY AGENT: 4,120 active roles indexed across Greenhouse & Lever",
         "SCORING AGENT: Match confidence threshold evaluated at 94.2%",
+        "MULTIMODAL INFERENCE: Gemini 3.8 Flash & GPT-6 Terra visual document parsing verified",
+        "CAREER CAMPUS: 18,400+ placement readiness benchmarks evaluated across 42 colleges",
         "LATEX SYNTHESIS: 1.8s compile latency per tailored artifact",
         "DISPATCH AGENT: Batch dispatch executing across 14 target queues",
+        "WHATSAPP BOT: 98.2% message dispatch delivery for candidate roadmaps",
         "ATS VERIFICATION: 96.8% parser validation across Workday & Taleo",
       ],
     },
@@ -222,6 +255,76 @@ export const LANDING_TRANSLATIONS: Record<LandingLang, LandingTranslations> = {
         desc: "Choose between review-first semi-autonomous mode or full autopilot to apply while you sleep.",
         spec: "SEMI-AUTONOMOUS • FULL AUTOPILOT",
         cta: "View dispatch automation",
+      },
+    },
+    campus: {
+      sectionTag: "CAMPUS TO CAREER PLATFORM",
+      heading: "Career Campus: Placement & Readiness Navigator",
+      subheading:
+        "Tailored for students, universities, and early-career talent. Turn coursework and academic projects into verified interview confidence with deterministic placement readiness scoring, AI mock interviews, and regional opportunities.",
+      badge: "CAMPUS PLACEMENT HUB",
+      readinessTitle: "Placement Readiness Index",
+      readinessSubtitle: "Empirical score evaluated from skill coverage, ATS resume health & roadmap milestones.",
+      mockTitle: "Interactive Mock Interview Simulator",
+      mockSubtitle: "Technical & behavioral interview simulator with step-by-step hints and rubric evaluations.",
+      c1: {
+        tag: "CAMPUS // 01",
+        title: "Placement Readiness Scoring",
+        desc: "Stop wondering if you are placement-ready. Our deterministic scoring index audits your resume, coursework, and coding skills against real campus recruitment bars.",
+        spec: "AUDITED 0-100% INDEX • ATS AUDIT • ZERO GUESSWORK",
+        cta: "Calculate readiness score",
+      },
+      c2: {
+        tag: "CAMPUS // 02",
+        title: "Role-Specific Mock Interviews",
+        desc: "Simulate rigorous technical coding rounds and behavioral interviews with step-by-step questions, real-time hints, and structured scorecard evaluations.",
+        spec: "TECHNICAL & HR • HINTS • INSTANT RUBRIC GRADING",
+        cta: "Start practice interview",
+      },
+      c3: {
+        tag: "CAMPUS // 03",
+        title: "Northeast & Regional Enterprise Tracks",
+        desc: "Dedicated preparation pathways for APSC, Banking (SBI/IBPS), State Govt, Oil & Natural Gas (OIL/ONGC), and regional tech ventures with native multilingual support.",
+        spec: "APSC • REGIONAL ENTERPRISE • PSUs • TRILINGUAL SUPPORT",
+        cta: "Explore regional tracks",
+      },
+      whatsappBanner: {
+        title: "SkillBridge WhatsApp Campus Companion",
+        desc: "Receive daily campus practice questions, roadmap milestone updates, and job alerts straight to your phone via WhatsApp.",
+        cta: "Connect on WhatsApp",
+      },
+    },
+    multimodal: {
+      sectionTag: "FRONTIER INTELLIGENCE MATRIX",
+      heading: "Powered by Next-Gen Multimodal LLMs",
+      subheading:
+        "CareerCrew doesn't rely on a single generic LLM. We orchestrate frontier multimodal models across vision, voice, reasoning, and document synthesis to accelerate every stage of your career.",
+      badge: "MULTIMODAL ORCHESTRATION",
+      providersHeading: "Supported Frontier Model Engines",
+      capabilitiesHeading: "Four Multimodal Execution Modalities",
+      m1: {
+        tag: "MODALITY 01",
+        title: "Visual & Document Grounding",
+        desc: "Ingests complex multi-column PDFs, academic transcripts, and portfolio images without OCR degradation or lost structure.",
+        spec: "GEMINI 3.8 FLASH • GPT-6.1 TERRA • PDF-PARSE v2",
+      },
+      m2: {
+        tag: "MODALITY 02",
+        title: "Real-Time Hands-Free Voice Engine",
+        desc: "Conduct full-duplex conversational voice mock interviews with live microphone streaming, low-latency synthesis, and audio waveform feedback.",
+        spec: "WEB SPEECH API • FULL-DUPLEX AUDIO • LOW LATENCY",
+      },
+      m3: {
+        tag: "MODALITY 03",
+        title: "Trilingual Code-Switching Intelligence",
+        desc: "Fluidly comprehends mixed-language dialect code-switching across Assamese, Hindi, and English technical terms without loss of precision.",
+        spec: "ENGLISH • অসমীয়া • HINDI • SEAMLESS CODE-SWITCH",
+      },
+      m4: {
+        tag: "MODALITY 04",
+        title: "Reactive Structured Card UI Synthesis",
+        desc: "Generates interactive card payloads (roadmaps, skill gap matrices, question scorecards) with rich UI components rather than flat markdown text.",
+        spec: "TYPED JSON SCHEMAS • REACTIVE CARDS • ZERO MARKDOWN CLUTTER",
       },
     },
     testimonials: {
@@ -328,6 +431,14 @@ export const LANDING_TRANSLATIONS: Record<LandingLang, LandingTranslations> = {
           q: "Can I cancel or change my plan anytime?",
           a: "Yes. You can upgrade, downgrade, or cancel your subscription at any time directly from your billing dashboard with zero penalty.",
         },
+        {
+          q: "What is Career Campus and how does Placement Readiness work?",
+          a: "Career Campus is our dedicated student and university placement hub. It evaluates your projects, coursework, and technical skills to generate an audited 0–100% Placement Readiness score, offers interactive mock interviews with real-time hints and scorecards, and curates customized learning roadmaps with regional placement opportunities.",
+        },
+        {
+          q: "Which Multimodal LLMs are available on the platform?",
+          a: "CareerCrew / SkillBridge orchestrates frontier multimodal models including Google Gemini 3.8 Flash & 3.1 Pro, OpenAI GPT-6 Astra & GPT-6.1 Terra, Anthropic Claude Fable 5.1 & Opus 5.5, DeepSeek V4 Pro (1M context), and Qwen 3.x for multilingual multimodal grounding across English, Hindi, and Assamese. You can switch models anytime in the Career Guide.",
+        },
       ],
     },
     footer: {
@@ -348,6 +459,8 @@ export const LANDING_TRANSLATIONS: Record<LandingLang, LandingTranslations> = {
       pipeline: "পাইপলাইন",
       telemetry: "টেলিমেট্ৰি",
       platform: "প্লেটফৰ্ম",
+      campus: "কেৰিয়াৰ কেম্পাছ",
+      multimodal: "মাল্টিম'ডেল LLM",
       testimonials: "প্ৰশংসাপত্ৰ",
       pricing: "মূল্য নিৰ্ধাৰণ",
       faq: "প্ৰশ্নোত্তৰ",
@@ -380,8 +493,11 @@ export const LANDING_TRANSLATIONS: Record<LandingLang, LandingTranslations> = {
       events: [
         "সন্ধান এজেণ্ট: গ্ৰীণহাউচ আৰু লিভাৰৰ পৰা ৪,১২০ টা সক্ৰিয় পদ সংগ্ৰহ কৰা হৈছে",
         "স্কোৰিং এজেণ্ট: প্ৰাৰ্থীৰ প্ৰ'ফাইলৰ সৈতে ৯৪.২% মিল মূল্যায়ন কৰা হৈছে",
+        "মাল্টিম'ডেল ইঞ্জিন: Gemini 3.8 Flash আৰু GPT-6 Terra দ্বাৰা ৰিজিউমি বিশ্লেষণ প্ৰমাণিত",
+        "কেৰিয়াৰ কেম্পাছ: ৪২ খন মহাবিদ্যালয়ত ১৮,৪০০+ শিক্ষাৰ্থীৰ প্লেচমেণ্ট প্ৰস্তুতি নিৰ্ধাৰিত",
         "LaTeX ৰিজিউমি নিৰ্মাণ: প্ৰতিটো ৰিজিউমি প্ৰস্তুত কৰিবলৈ মাত্ৰ ১.৮ ছেকেণ্ড সময় লাগে",
         "প্ৰেৰণ এজেণ্ট: ১৪ টা নিৰ্বাচিত কোম্পানীত স্বয়ংক্ৰিয়ভাৱে আবেদন প্ৰেৰণ চলি আছে",
+        "হোৱাটছএপ বট: শিক্ষাৰ্থীৰ ৰোডমেপ প্ৰেৰণত ৯৮.২% সফলতা",
         "ATS পৰীক্ষণ: ৱৰ্কডে আৰু টালিঅ'ত ৯৬.৮% ৰিজিউমি সফলভাৱে গৃহীত হৈছে",
       ],
     },
@@ -437,6 +553,76 @@ export const LANDING_TRANSLATIONS: Record<LandingLang, LandingTranslations> = {
         desc: "পুনৰীক্ষণ কৰি প্ৰেৰণ কৰাৰ বাবে অৰ্ধ-স্বায়ত্তশাসিত বিকল্প বা টোপনিতো আবেদন চলাবলৈ সম্পূৰ্ণ অটোপাইলট বাছক।",
         spec: "অৰ্ধ-স্বায়ত্তশাসিত • সম্পূৰ্ণ অটোপাইলট",
         cta: "স্বয়ংক্ৰিয় প্ৰেৰণ চাওক",
+      },
+    },
+    campus: {
+      sectionTag: "কেম্পাছৰ পৰা কেৰিয়াৰ প্লেটফৰ্ম",
+      heading: "কেৰিয়াৰ কেম্পাছ: প্লেচমেণ্ট আৰু প্ৰস্তুতি নিৰ্দেশক",
+      subheading:
+        "ছাত্ৰ-ছাত্ৰী, বিশ্ববিদ্যালয় আৰু নৱাগত প্ৰাৰ্থীসকলৰ বাবে বিশেষভাৱে নিৰ্মিত। পাঠ্যক্ৰম আৰু শৈক্ষিক প্ৰকল্পসমূহক নিশ্চিত সাক্ষাৎকাৰ আত্মবিশ্বাসলৈ ৰূপান্তৰ কৰক।",
+      badge: "কেম্পাছ প্লেচমেণ্ট কেন্দ্ৰ",
+      readinessTitle: "প্লেচমেণ্ট প্ৰস্তুতি সূচক",
+      readinessSubtitle: "দক্ষতাৰ পৰিসৰ, ATS ৰিজিউমিৰ মান আৰু ৰোডমেপ অগ্ৰগতিৰ পৰা নিৰ্ধাৰিত বাস্তৱিক স্কোৰ।",
+      mockTitle: "আন্তঃক্ৰিয়ামুখী মক সাক্ষাৎকাৰ চিমুলেটৰ",
+      mockSubtitle: "পদ-ভিত্তিক কাৰিকৰী আৰু আচৰণগত সাক্ষাৎকাৰ সহ বাস্তৱ সময়ৰ ইঙ্গিত আৰু ৰুব্ৰিক মূল্যায়ন।",
+      c1: {
+        tag: "কেম্পাছ // ০১",
+        title: "প্লেচমেণ্ট প্ৰস্তুতি মূল্যায়ন",
+        desc: "আপুনি কেম্পাছ নিযুক্তিৰ বাবে প্ৰস্তুত নে নহয় তাক লৈ চিন্তা নকৰিব। আমাৰ নিৰ্ধাৰিত সূচকে আপোনাৰ ৰিজিউমি আৰু দক্ষতাক কোম্পানীৰ নিযুক্তি মাপকাঠীৰ সৈতে তুলনা কৰে।",
+        spec: "০-১০০% প্ৰস্তুতি স্কোৰ • ATS পৰীক্ষণ • নিশ্চিত তথ্য",
+        cta: "প্ৰস্তুতি স্কোৰ গণনা কৰক",
+      },
+      c2: {
+        tag: "কেম্পাছ // ০২",
+        title: "পদ-ভিত্তিক মক সাক্ষাৎকাৰ",
+        desc: "প্ৰতিটো পদক্ষেপত প্ৰশ্ন, তাৎক্ষণিক সহায়ক ইঙ্গিত আৰু গাঁথনিগত স্কোৰকাৰ্ড সহ কঠিন কাৰিকৰী আৰু এইচ.আৰ. সাক্ষাৎকাৰৰ অনুশীলন কৰক।",
+        spec: "কাৰিকৰী আৰু HR • বাস্তৱ সময়ৰ সহায় • তাৎক্ষণিক মূল্যায়ন",
+        cta: "মক সাক্ষাৎকাৰ আৰম্ভ কৰক",
+      },
+      c3: {
+        tag: "কেম্পাছ // ০৩",
+        title: "উত্তৰ-পূৰ্বাঞ্চল আৰু আঞ্চলিক কেৰিয়াৰ ট্ৰেক",
+        desc: "APSC, বেংকিং (SBI/IBPS), ৰাজ্য চৰকাৰৰ পদ, OIL/ONGC আৰু স্থানীয় ষ্টাৰ্টআপসমূহৰ বাবে অসমীয়া আৰু হিন্দী ভাষাত বিশেষ প্ৰস্তুতি সুবিধা।",
+        spec: "APSC • আঞ্চলিক প্ৰতিষ্ঠান • PSUs • ত্ৰিভাষিক সহায়",
+        cta: "আঞ্চলিক সুযোগ চাওক",
+      },
+      whatsappBanner: {
+        title: "স্কিলব্ৰিজ হোৱাটছএপ কেম্পাছ সহযোগী",
+        desc: "হোৱাটছএপৰ জৰিয়তে পোনপটীয়াকৈ দৈনিক কেম্পাছ অনুশীলন প্ৰশ্ন, ৰোডমেপ আৰু চাকৰিৰ জাননী লাভ কৰক।",
+        cta: "হোৱাটছএপত সংযোগ কৰক",
+      },
+    },
+    multimodal: {
+      sectionTag: "অত্যাধুনিক মাল্টিম'ডেল বুদ্ধিমত্তা",
+      heading: "উন্নত মাল্টিম'ডেল LLM দ্বাৰা চালিত",
+      subheading:
+        "কেৰিয়াৰক্ৰু কোনো এটা সাধাৰণ মডেলৰ ওপৰত নিৰ্ভৰ নকৰে। আমি দৃষ্টি, কণ্ঠ, কাৰিকৰী ক'ড আৰু যুক্তিৰ ক্ষেত্ৰত বিশ্বমানৰ মাল্টিম'ডেল মডেলসমূহ ব্যৱহাৰ কৰোঁ।",
+      badge: "মাল্টিম'ডেল সমন্বয়",
+      providersHeading: "সমৰ্থিত শীৰ্ষ AI ইঞ্জিনসমূহ",
+      capabilitiesHeading: "চাৰিটা মাল্টিম'ডেল কাৰ্যকৰী দিশ",
+      m1: {
+        tag: "সুবিধা ০১",
+        title: "নথি আৰু ভিজুৱেল বিশ্লেষণ",
+        desc: "জটিল বহু-স্তম্ভ PDF ৰিজিউমি, বিশ্ববিদ্যালয়ৰ নম্বৰ তালিকা আৰু প্ৰমাণপত্ৰ কোনো ক্ষতি নোহোৱাকৈ নিখুঁতভাৱে বুজি পায়।",
+        spec: "GEMINI 3.8 FLASH • GPT-6.1 TERRA • PDF বিশ্লেষণ",
+      },
+      m2: {
+        tag: "সুবিধা ০২",
+        title: "বাস্তৱ সময়ৰ কণ্ঠ সাক্ষাৎকাৰ ইঞ্জিন",
+        desc: "লাইভ মাইক্ৰ'ফোন আৰু স্পষ্ট কণ্ঠ সহ পোনপটীয়াকৈ কথা পাতি মক সাক্ষাৎকাৰ অনুশীলন কৰক।",
+        spec: "WEB SPEECH API • তাৎক্ষণিক কণ্ঠ সংযোগ • নিম্ন লেটেন্সি",
+      },
+      m3: {
+        tag: "সুবিধা ০৩",
+        title: "ত্ৰিভাষিক ক'ড-ছুইচিং বুদ্ধিমত্তা",
+        desc: "অসমীয়া, হিন্দী আৰু ইংৰাজী মিশ্ৰিত বাক্যসমূহৰ সূক্ষ্ম অৰ্থ নিখুঁতভাৱে অনুধাৱন কৰে।",
+        spec: "ইংৰাজী • অসমীয়া • হিন্দী • নিৰৱচ্ছিন্ন ভাষা পৰিৱৰ্তন",
+      },
+      m4: {
+        tag: "সুবিধা ০৪",
+        title: "গাঁথনিগত কাৰ্ড UI নিৰ্মাণ",
+        desc: "কেৱল পাঠ্য বাৰ্তাৰ পৰিৱৰ্তে শিক্ষণ ৰোডমেপ, স্কিল গেপ আৰু সাক্ষাৎকাৰ মূল্যায়নৰ আকৰ্ষণীয় কাৰ্ড প্ৰদৰ্শন কৰে।",
+        spec: "প্ৰকাৰযুক্ত JSON • সংবেদনশীল কাৰ্ড • নিকা ব্যৱহাৰকাৰী মাধ্যম",
       },
     },
     testimonials: {
@@ -542,6 +728,14 @@ export const LANDING_TRANSLATIONS: Record<LandingLang, LandingTranslations> = {
         {
           q: "মই যেতিয়াই ইচ্ছা মোৰ পৰিকল্পনা বাতিল কৰিব পাৰিমনে?",
           a: "হয়। আপুনি যিকোনো সময়তে ডেশ্বব'ৰ্ডৰ পৰা কোনো অতিৰিক্ত মাচুল অবিহনে আপোনাৰ ছাবস্ক্ৰিপশ্বন আপগ্ৰেড, ডাউনগ্ৰেড বা বাতিল কৰিব পাৰিব।",
+        },
+        {
+          q: "কেৰিয়াৰ কেম্পাছ কি আৰু প্লেচমেণ্ট প্ৰস্তুতি সূচক কেনেকৈ কাম কৰে?",
+          a: "কেৰিয়াৰ কেম্পাছ হৈছে ছাত্ৰ-ছাত্ৰী আৰু বিশ্ববিদ্যালয়ৰ বাবে নিৰ্মিত প্লেচমেণ্ট হাব। ই আপোনাৰ শৈক্ষিক প্ৰকল্প আৰু দক্ষতাক মূল্যায়ন কৰি ০-১০০% প্ৰস্তুতি স্কোৰ প্ৰদান কৰে, ৰুব্ৰিক আৰু ইঙ্গিত সহ লাইভ মক সাক্ষাৎকাৰ চলায় আৰু আঞ্চলিক নিযুক্তিৰ সুযোগ প্ৰদান কৰে।",
+        },
+        {
+          q: "প্লেটফৰ্মত কি কি মাল্টিম'ডেল LLM উপলব্ধ?",
+          a: "কেৰিয়াৰক্ৰু / স্কিলব্ৰিজত Google Gemini 3.8 Flash আৰু 3.1 Pro, OpenAI GPT-6 Astra আৰু GPT-6.1 Terra, Anthropic Claude Fable 5.1 আৰু Opus 5.5, DeepSeek V4 Pro (১ নিযুত কনটেক্সট) আৰু ত্ৰিভাষিক Qwen 3.x অন্তৰ্ভুক্ত আছে। আপুনি কেৰিয়াৰ গাইডত যিকোনো সময়তে মডেল সলনি কৰিব পাৰে।",
         },
       ],
     },

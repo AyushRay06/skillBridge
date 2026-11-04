@@ -59,6 +59,9 @@ export default function SignupPage() {
       });
 
       if (response.data) {
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
         login(response.data);
         toast.success("Account created successfully!");
         router.push("/dashboard");

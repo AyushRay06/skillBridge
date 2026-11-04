@@ -39,19 +39,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Check if OAuth callback passed ?token= in URL
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlToken = params.get("token");
+      if (urlToken) {
+        localStorage.setItem("token", urlToken);
+        // Clean URL without reloading
+        params.delete("token");
+        const newSearch = params.toString();
+        const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "");
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    }
+
     // Validate session with the server on mount.
     // This handles both:
-    // 1. Normal page reloads (re-validates the JWT cookie)
-    // 2. OAuth redirects (frontend detects the JWT cookie set by the backend)
+    // 1. Normal page reloads (re-validates the JWT cookie / bearer token)
+    // 2. OAuth redirects (frontend detects the JWT cookie or bearer token set by the backend)
     const checkAuth = async () => {
       try {
         const res = await axiosAPI.get("/auth/me");
         setUser(res.data);
         localStorage.setItem("user", JSON.stringify(res.data));
       } catch {
-        // JWT cookie is missing or invalid — clear state
+        // JWT cookie / token is missing or invalid — clear state
         setUser(null);
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
       } finally {
         setIsLoading(false);
       }
@@ -111,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setUser(null);
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
       router.replace("/");
     }
   };

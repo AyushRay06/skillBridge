@@ -36,6 +36,9 @@ export default function LoginPage() {
       const response = await axiosAPI.post("/auth/login", formData);
 
       if (response.data) {
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
         login(response.data);
         toast.success("Login successful!");
         router.push("/dashboard");

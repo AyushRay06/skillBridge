@@ -15,9 +15,16 @@ router.post("/login", authLimiter, login);
 router.post("/logout", logout);
 router.put("/updateProfile", protectRoute, updateProfile);
 
-// Session validation — frontend calls this on mount to check if JWT cookie is valid
+// Session validation — frontend calls this on mount to check if session is valid
 router.get("/me", protectRoute, (req, res) => {
-  res.json(req.user);
+  const authHeader = req.headers.authorization;
+  const bearerToken = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+  const token = req.cookies.jwt || bearerToken;
+
+  res.json({
+    ...req.user,
+    token: token || undefined,
+  });
 });
 
 export default router;

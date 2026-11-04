@@ -62,6 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const res = await axiosAPI.get("/auth/me");
         setUser(res.data);
         localStorage.setItem("user", JSON.stringify(res.data));
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
       } catch {
         // JWT cookie / token is missing or invalid — clear state
         setUser(null);

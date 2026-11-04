@@ -573,11 +573,17 @@ export default function CareerGuidePage() {
       const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       const cleanBase = baseURL.endsWith("/") ? baseURL.slice(0, -1) : baseURL;
 
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${cleanBase}/career-guide/chat/stream`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         credentials: "include",
         body: JSON.stringify({
           conversationId,

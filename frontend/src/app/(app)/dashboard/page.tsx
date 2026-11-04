@@ -25,21 +25,13 @@ import {
   GraduationCap
 } from "@/components/animate-ui/icons";
 import { MessageSquare, ArrowUpRight } from "lucide-react";
-import { motion } from "framer-motion";
 import { FullPageSkeleton } from "@/components/skeletons";
-import { 
-  CadCrosshair, 
-  HatchedBlock, 
-  StraightLinePattern, 
-  CadStraightLineBorder 
-} from "@/components/CadAccents";
 
 export default function Dashboard() {
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [hoveredMetric, setHoveredMetric] = useState<number | null>(null);
 
   const [stats, setStats] = useState({
     totalResumes: 0,
@@ -97,7 +89,7 @@ export default function Dashboard() {
         completeness = Math.round(completeness);
       }
 
-      // Compute dynamic, grounded placement readiness
+      // Compute dynamic placement readiness
       let readiness = 60;
       if (completeness > 0) readiness += Math.round((completeness / 100) * 20);
       if (resumes.length > 0) readiness += 10;
@@ -135,377 +127,263 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full min-h-screen px-6 sm:px-8 lg:px-12 py-8 space-y-8 max-w-7xl mx-auto select-none">
+    <div className="w-full min-h-screen px-6 sm:px-8 lg:px-10 py-7 space-y-7 max-w-7xl mx-auto">
       
       {/* ─────────────────────────────────────────────────────────────
-          1. ARCHITECTURAL HEADER & ACTION CLUSTER
+          1. CLEAN MODERN HEADER & ACTIONS
           ───────────────────────────────────────────────────────────── */}
-      <div className="border-b border-border/80 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/80 pb-5">
         <div>
-          {/* Engineering Category Indicator */}
-          <div className="flex items-center gap-2 mb-2.5">
-            <span className="font-mono text-xs font-black tracking-tighter text-foreground opacity-70">
-              ///
-            </span>
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-              WORKSPACE TELEMETRY &amp; CONTROL CONSOLE
-            </span>
-            <HatchedBlock className="hidden sm:block opacity-60 ml-1" />
-          </div>
-
-          <h1 className="text-2xl sm:text-4xl font-bold font-heading text-foreground tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Dashboard
           </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed">
-            Real-time pipeline tracking, tailored ATS documents, autonomous crawler queues, and placement readiness.
+          <p className="text-sm text-muted-foreground mt-1">
+            Track your resumes, active job applications, and placement readiness.
           </p>
         </div>
 
-        {/* Action Cluster (Consistent 0px split-buttons) */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Primary Split Button */}
+        <div className="flex flex-wrap items-center gap-2.5">
           <button 
             type="button"
             onClick={() => router.push("/apply")}
-            className="group inline-flex items-stretch border border-foreground bg-foreground text-background font-mono text-xs font-semibold uppercase tracking-wider transition-opacity hover:opacity-90 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-foreground text-background hover:bg-foreground/90 transition-all rounded-md shadow-xs cursor-pointer active:scale-98"
           >
-            <div className="flex items-center justify-center px-3 py-2.5 border-r border-background/20 bg-foreground">
-              <ChevronRight className="h-3.5 w-3.5 text-background transition-transform group-hover:translate-x-0.5" />
-            </div>
-            <div className="flex items-center gap-1.5 px-4 py-2.5">
-              <Zap className="h-3.5 w-3.5" />
-              <span>One-Click Apply</span>
-            </div>
+            <Zap size={14} />
+            <span>One-Click Apply</span>
           </button>
 
-          {/* Secondary Outline Action */}
           <button 
             type="button"
             onClick={() => router.push("/resume")}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 border border-border/80 bg-background hover:bg-muted/60 text-foreground font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium border border-border bg-card hover:bg-muted text-foreground transition-all rounded-md cursor-pointer active:scale-98"
           >
-            <Plus className="h-3.5 w-3.5 text-muted-foreground" />
+            <Plus size={14} className="text-muted-foreground" />
             <span>New Resume</span>
           </button>
 
-          {/* Career Guide Link */}
           <button 
             type="button"
             onClick={() => router.push("/career-guide")}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 border border-border/80 bg-background hover:bg-muted/60 text-foreground font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium border border-border bg-card hover:bg-muted text-foreground transition-all rounded-md cursor-pointer active:scale-98"
           >
-            <Compass className="h-3.5 w-3.5 text-emerald-500" />
+            <Compass size={14} className="text-emerald-500" />
             <span>Career Guide</span>
           </button>
         </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. CAD ENGINEERING TELEMETRY STRIP
-          ───────────────────────────────────────────────────────────── */}
-      <div className="border border-border/80 bg-muted/10 px-4 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono text-[10px] text-muted-foreground">
-        <div className="flex items-center gap-3">
-          <span className="text-foreground font-bold flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            SYSTEM STATUS:
-          </span>
-          <span>ALL ENGINES OPTIMAL</span>
-          <span className="text-border">//</span>
-          <span>ATS COMPILER: v4.2 LATEX</span>
-        </div>
-        <div className="flex items-center gap-4 text-[10px]">
-          <span>VECTOR EMBEDDINGS: COSINE MATCH 94.2%</span>
-          <span className="text-border hidden sm:inline">//</span>
-          <span className="hidden sm:inline">MULTIMODAL ROUTER: ACTIVE</span>
-        </div>
-      </div>
-
-      {/* ─────────────────────────────────────────────────────────────
-          3. FOUR HARMONIZED CORE METRIC CARDS
+          2. FOUR CLEAN METRIC CARDS
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Metric 01: Tailored Resumes */}
         <div 
-          onMouseEnter={() => setHoveredMetric(0)}
-          onMouseLeave={() => setHoveredMetric(null)}
           onClick={() => router.push("/saved-resumes")}
-          className="border border-border/80 bg-card p-5 relative group transition-all duration-200 hover:border-foreground/50 cursor-pointer"
+          className="border border-border/70 bg-card p-5 rounded-lg hover:border-border hover:shadow-xs transition-all cursor-pointer group"
         >
-          {hoveredMetric === 0 && <CadStraightLineBorder />}
-          <CadCrosshair className="absolute top-1 left-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute top-1 right-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute bottom-1 left-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute bottom-1 right-1 opacity-40" size="text-[8px]" />
-
-          <div className="flex items-center justify-between text-muted-foreground mb-4 pb-2 border-b border-border/60 font-mono text-[11px]">
-            <span className="uppercase tracking-wider">01 // RESUMES</span>
-            <div className="w-7 h-7 border border-border bg-background flex items-center justify-center text-muted-foreground group-hover:text-foreground group-hover:border-foreground transition-colors">
-              <FileText size={14} />
+          <div className="flex items-center justify-between text-muted-foreground mb-3">
+            <span className="text-xs font-medium uppercase tracking-wider">Total Resumes</span>
+            <div className="w-8 h-8 rounded-md bg-muted/70 flex items-center justify-center text-foreground group-hover:text-foreground transition-colors">
+              <FileText size={15} />
             </div>
           </div>
-
-          <div className="text-3xl sm:text-4xl font-bold font-mono text-foreground tracking-tight mb-2">
+          <div className="text-3xl font-bold tracking-tight text-foreground font-mono mb-1">
             {loading ? "..." : stats.totalResumes}
           </div>
-
-          <p className="font-mono text-[11px] text-muted-foreground flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Tailored ATS documents compiled
-          </p>
+          <p className="text-xs text-muted-foreground">Tailored ATS documents created</p>
         </div>
 
         {/* Metric 02: Jobs Discovered */}
         <div 
-          onMouseEnter={() => setHoveredMetric(1)}
-          onMouseLeave={() => setHoveredMetric(null)}
           onClick={() => router.push("/jobs")}
-          className="border border-border/80 bg-card p-5 relative group transition-all duration-200 hover:border-foreground/50 cursor-pointer"
+          className="border border-border/70 bg-card p-5 rounded-lg hover:border-border hover:shadow-xs transition-all cursor-pointer group"
         >
-          {hoveredMetric === 1 && <CadStraightLineBorder />}
-          <CadCrosshair className="absolute top-1 left-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute top-1 right-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute bottom-1 left-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute bottom-1 right-1 opacity-40" size="text-[8px]" />
-
-          <div className="flex items-center justify-between text-muted-foreground mb-4 pb-2 border-b border-border/60 font-mono text-[11px]">
-            <span className="uppercase tracking-wider">02 // DISCOVERED</span>
-            <div className="w-7 h-7 border border-border bg-background flex items-center justify-center text-muted-foreground group-hover:text-foreground group-hover:border-foreground transition-colors">
-              <Briefcase size={14} />
+          <div className="flex items-center justify-between text-muted-foreground mb-3">
+            <span className="text-xs font-medium uppercase tracking-wider">Jobs Discovered</span>
+            <div className="w-8 h-8 rounded-md bg-muted/70 flex items-center justify-center text-foreground group-hover:text-foreground transition-colors">
+              <Briefcase size={15} />
             </div>
           </div>
-
-          <div className="text-3xl sm:text-4xl font-bold font-mono text-foreground tracking-tight mb-2">
+          <div className="text-3xl font-bold tracking-tight text-foreground font-mono mb-1">
             {loading ? "..." : stats.totalJobs}
           </div>
-
-          <p className="font-mono text-[11px] text-muted-foreground flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Matching opportunities indexed
-          </p>
+          <p className="text-xs text-muted-foreground">Matching opportunities indexed</p>
         </div>
 
         {/* Metric 03: Active Autopilots */}
         <div 
-          onMouseEnter={() => setHoveredMetric(2)}
-          onMouseLeave={() => setHoveredMetric(null)}
           onClick={() => router.push("/autopilot")}
-          className="border border-border/80 bg-card p-5 relative group transition-all duration-200 hover:border-foreground/50 cursor-pointer"
+          className="border border-border/70 bg-card p-5 rounded-lg hover:border-border hover:shadow-xs transition-all cursor-pointer group"
         >
-          {hoveredMetric === 2 && <CadStraightLineBorder />}
-          <CadCrosshair className="absolute top-1 left-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute top-1 right-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute bottom-1 left-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute bottom-1 right-1 opacity-40" size="text-[8px]" />
-
-          <div className="flex items-center justify-between text-muted-foreground mb-4 pb-2 border-b border-border/60 font-mono text-[11px]">
-            <span className="uppercase tracking-wider">03 // AUTOPILOT</span>
-            <div className="w-7 h-7 border border-border bg-background flex items-center justify-center text-muted-foreground group-hover:text-foreground group-hover:border-foreground transition-colors">
-              <Activity size={14} />
+          <div className="flex items-center justify-between text-muted-foreground mb-3">
+            <span className="text-xs font-medium uppercase tracking-wider">Active Autopilots</span>
+            <div className="w-8 h-8 rounded-md bg-muted/70 flex items-center justify-center text-foreground group-hover:text-foreground transition-colors">
+              <Activity size={15} />
             </div>
           </div>
-
-          <div className="flex items-baseline gap-2.5 mb-2">
-            <div className="text-3xl sm:text-4xl font-bold font-mono text-foreground tracking-tight">
+          <div className="flex items-baseline gap-2 mb-1">
+            <div className="text-3xl font-bold tracking-tight text-foreground font-mono">
               {loading ? "..." : stats.activeAgents}
             </div>
             {stats.activeAgents > 0 && (
-              <span className="font-mono text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
+              <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                LIVE
+                Live
               </span>
             )}
           </div>
-
-          <p className="font-mono text-[11px] text-muted-foreground flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Background discovery queues running
-          </p>
+          <p className="text-xs text-muted-foreground">Background search agents running</p>
         </div>
 
         {/* Metric 04: Placement Readiness */}
         <div 
-          onMouseEnter={() => setHoveredMetric(3)}
-          onMouseLeave={() => setHoveredMetric(null)}
           onClick={() => router.push("/career-guide")}
-          className="border border-border/80 bg-card p-5 relative group transition-all duration-200 hover:border-foreground/50 cursor-pointer"
+          className="border border-border/70 bg-card p-5 rounded-lg hover:border-border hover:shadow-xs transition-all cursor-pointer group"
         >
-          {hoveredMetric === 3 && <CadStraightLineBorder />}
-          <CadCrosshair className="absolute top-1 left-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute top-1 right-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute bottom-1 left-1 opacity-40" size="text-[8px]" />
-          <CadCrosshair className="absolute bottom-1 right-1 opacity-40" size="text-[8px]" />
-
-          <div className="flex items-center justify-between text-muted-foreground mb-4 pb-2 border-b border-border/60 font-mono text-[11px]">
-            <span className="uppercase tracking-wider">04 // READINESS</span>
-            <div className="w-7 h-7 border border-border bg-background flex items-center justify-center text-muted-foreground group-hover:text-foreground group-hover:border-foreground transition-colors">
-              <GraduationCap size={14} />
+          <div className="flex items-center justify-between text-muted-foreground mb-3">
+            <span className="text-xs font-medium uppercase tracking-wider">Placement Readiness</span>
+            <div className="w-8 h-8 rounded-md bg-muted/70 flex items-center justify-center text-foreground group-hover:text-foreground transition-colors">
+              <GraduationCap size={15} />
             </div>
           </div>
-
-          <div className="flex items-baseline gap-2 mb-2">
-            <div className="text-3xl sm:text-4xl font-bold font-mono text-foreground tracking-tight">
+          <div className="flex items-baseline gap-2 mb-1">
+            <div className="text-3xl font-bold tracking-tight text-foreground font-mono">
               {loading ? "..." : `${stats.placementReadiness}%`}
             </div>
-            <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold uppercase">
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold font-mono uppercase">
               Tier 1 Ready
             </span>
           </div>
-
-          <p className="font-mono text-[11px] text-muted-foreground flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <p className="text-xs text-muted-foreground">
             {stats.activeRoadmaps} Career Roadmap{stats.activeRoadmaps !== 1 ? "s" : ""} active
           </p>
         </div>
+
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. TWO-COLUMN MAIN WORKSPACE (2/3 Left, 1/3 Right)
+          3. MAIN TWO-COLUMN WORKSPACE
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
         
-        {/* Left Column (8 cols): Advisory Console, Roadmaps & Resumes */}
+        {/* Left Column (8 cols): Career Guide, Roadmaps & Resumes */}
         <div className="lg:col-span-8 space-y-7">
           
-          {/* Section 01: Career Advisory & Real-time Voice Console */}
-          <div className="border border-border/80 bg-card relative">
-            <CadCrosshair className="absolute -top-1.5 -left-1.5" size="text-[9px]" />
-            <CadCrosshair className="absolute -top-1.5 -right-1.5" size="text-[9px]" />
-            
-            {/* Console Header */}
-            <div className="p-4 sm:p-5 border-b border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-muted/15 font-mono text-xs">
-              <div className="flex items-center gap-2 text-foreground font-bold uppercase tracking-wider">
-                <Compass className="h-4 w-4 text-emerald-500" />
-                <span>01 // CAREER GUIDE &amp; VOICE ADVISORY</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  VOICE CALL READY
-                </span>
-                <span className="border border-border bg-background px-2 py-0.5 text-muted-foreground text-[10px]">
-                  EN • অসমীয়া • HI
-                </span>
-              </div>
-            </div>
-
-            {/* Console Body */}
-            <div className="p-6 space-y-5">
-              <div className="space-y-1.5">
-                <h3 className="text-base sm:text-lg font-bold text-foreground">
-                  Bilingual Career Navigator &amp; Mock Interview Agent
-                </h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  Evaluate campus placement readiness, practice technical mock interviews with instant rubrics, diagnose skill gaps, and explore Northeast &amp; national engineering roles.
+          {/* Career Guide & Voice Advisory Hub */}
+          <div className="border border-border/80 bg-card rounded-lg p-5 sm:p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
+              <div>
+                <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+                  <Compass className="h-4 w-4 text-emerald-500" />
+                  <span>Career Guide &amp; Voice Advisory</span>
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Bilingual career consulting, placement readiness audits, and real-time mock interviews.
                 </p>
               </div>
 
-              {/* Clean Quick Action Chips (Monochrome with sharp borders) */}
-              <div className="flex flex-wrap gap-2 pt-1 font-mono text-xs">
-                <button
-                  type="button"
-                  onClick={() => router.push("/career-guide?prompt=What roles suit me and what are my skill gaps?")}
-                  className="px-3 py-1.5 border border-border/80 bg-background hover:bg-muted text-foreground transition-colors flex items-center gap-1.5 cursor-pointer text-xs"
-                >
-                  <Target size={12} className="text-muted-foreground" />
-                  <span>Analyze Role Skill Gaps</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => router.push("/career-guide?prompt=Make me a step-by-step career roadmap for my profile")}
-                  className="px-3 py-1.5 border border-border/80 bg-background hover:bg-muted text-foreground transition-colors flex items-center gap-1.5 cursor-pointer text-xs"
-                >
-                  <Compass size={12} className="text-muted-foreground" />
-                  <span>Generate Career Roadmap</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => router.push("/career-guide?prompt=Review my resume and suggest improvements")}
-                  className="px-3 py-1.5 border border-border/80 bg-background hover:bg-muted text-foreground transition-colors flex items-center gap-1.5 cursor-pointer text-xs"
-                >
-                  <FileText size={12} className="text-muted-foreground" />
-                  <span>ATS Resume Review</span>
-                </button>
+              <div className="flex items-center gap-1.5 self-start sm:self-auto font-mono text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Voice Call Ready</span>
               </div>
+            </div>
 
-              {/* Action Buttons Row */}
-              <div className="pt-3 border-t border-border/60 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  {/* Start Voice Call */}
-                  <button
-                    type="button"
-                    onClick={() => router.push("/career-guide?voiceCall=true")}
-                    className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono text-xs uppercase tracking-wider font-semibold transition-colors cursor-pointer"
-                  >
-                    <PhoneCall size={13} />
-                    <span>Start Voice Call</span>
-                  </button>
+            {/* Quick Prompt Chips */}
+            <div className="flex flex-wrap gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => router.push("/career-guide?prompt=What roles suit me and what are my skill gaps?")}
+                className="px-3 py-1.5 border border-border bg-background hover:bg-muted text-foreground transition-colors rounded-md flex items-center gap-1.5 cursor-pointer"
+              >
+                <Target size={12} className="text-muted-foreground" />
+                <span>Analyze Skill Gaps</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/career-guide?prompt=Make me a step-by-step career roadmap for my profile")}
+                className="px-3 py-1.5 border border-border bg-background hover:bg-muted text-foreground transition-colors rounded-md flex items-center gap-1.5 cursor-pointer"
+              >
+                <Compass size={12} className="text-muted-foreground" />
+                <span>Generate Career Roadmap</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/career-guide?prompt=Review my resume and suggest improvements")}
+                className="px-3 py-1.5 border border-border bg-background hover:bg-muted text-foreground transition-colors rounded-md flex items-center gap-1.5 cursor-pointer"
+              >
+                <FileText size={12} className="text-muted-foreground" />
+                <span>ATS Resume Review</span>
+              </button>
+            </div>
 
-                  {/* Open Chat */}
-                  <button
-                    type="button"
-                    onClick={() => router.push("/career-guide")}
-                    className="inline-flex items-center gap-2 px-4 py-2 border border-border/80 bg-background hover:bg-muted text-foreground font-mono text-xs uppercase tracking-wider font-semibold transition-colors cursor-pointer"
-                  >
-                    <span>Open Advisory Chat</span>
-                    <ArrowRight size={13} />
-                  </button>
-                </div>
+            {/* Actions Row */}
+            <div className="pt-2 flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => router.push("/career-guide?voiceCall=true")}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-md transition-colors cursor-pointer"
+              >
+                <PhoneCall size={13} />
+                <span>Start Voice Call</span>
+              </button>
 
-                <span className="font-mono text-[11px] text-muted-foreground hidden sm:inline">
-                  Latency: ~140ms • Native Audio Stream
-                </span>
-              </div>
+              <button
+                type="button"
+                onClick={() => router.push("/career-guide")}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-border bg-background hover:bg-muted text-foreground text-xs font-semibold rounded-md transition-colors cursor-pointer"
+              >
+                <span>Open Advisory Chat</span>
+                <ArrowRight size={13} />
+              </button>
             </div>
           </div>
 
-          {/* Section 02: Active Learning Roadmap */}
-          <div className="border border-border/80 bg-card relative">
-            <div className="p-4 sm:p-5 border-b border-border/80 flex items-center justify-between bg-muted/15 font-mono text-xs">
-              <div className="flex items-center gap-2 text-foreground font-bold uppercase tracking-wider">
-                <Target className="h-4 w-4 text-emerald-500" />
-                <span>02 // ACTIVE LEARNING ROADMAP</span>
+          {/* Active Learning Roadmap */}
+          <div className="border border-border/80 bg-card rounded-lg overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-border/80 flex items-center justify-between bg-muted/20">
+              <div className="flex items-center gap-2 text-foreground font-semibold text-xs uppercase tracking-wider">
+                <Target size={14} className="text-emerald-500" />
+                <span>Active Learning Roadmap</span>
               </div>
               <button 
                 type="button"
                 onClick={() => router.push("/career-guide")}
-                className="text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors uppercase tracking-wider cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
-                <span>View Roadmaps ({stats.activeRoadmaps})</span>
+                <span>All roadmaps ({stats.activeRoadmaps})</span>
                 <ChevronRight size={13} />
               </button>
             </div>
 
             {latestRoadmap ? (
-              <div className="p-6 space-y-5">
+              <div className="p-5 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
                   <div>
-                    <h3 className="text-base font-bold text-foreground">{latestRoadmap.title}</h3>
-                    <p className="text-xs text-muted-foreground font-mono mt-0.5">
-                      Target Role: <span className="text-foreground font-semibold">{latestRoadmap.targetRole || "Engineering Role"}</span>
+                    <h3 className="text-sm font-bold text-foreground">{latestRoadmap.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Target Role: <span className="text-foreground font-medium">{latestRoadmap.targetRole || "Engineering Role"}</span>
                     </p>
                   </div>
                   {latestRoadmap.estimatedWeeks && (
-                    <span className="font-mono text-[10px] px-2 py-0.5 border border-border bg-background text-muted-foreground w-fit uppercase">
-                      ~{latestRoadmap.estimatedWeeks} Weeks Est.
+                    <span className="font-mono text-[10px] px-2 py-0.5 border border-border bg-background text-muted-foreground rounded-md w-fit">
+                      ~{latestRoadmap.estimatedWeeks} Weeks
                     </span>
                   )}
                 </div>
 
-                {/* Steps progress */}
                 {latestRoadmap.steps && latestRoadmap.steps.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between font-mono text-[11px] text-muted-foreground">
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>Curriculum Milestones</span>
-                      <span className="text-foreground font-bold">
+                      <span className="text-foreground font-medium font-mono text-[11px]">
                         {latestRoadmap.steps.filter((s: any) => s.status === "done").length} / {latestRoadmap.steps.length} Completed
                       </span>
                     </div>
 
-                    {/* Progress Bar */}
-                    <div className="w-full h-2 bg-muted border border-border/80 overflow-hidden">
+                    <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-emerald-500 transition-all duration-300"
+                        className="h-full bg-emerald-500 transition-all duration-300 rounded-full"
                         style={{
                           width: `${Math.round(
                             (latestRoadmap.steps.filter((s: any) => s.status === "done").length /
@@ -515,23 +393,22 @@ export default function Dashboard() {
                       />
                     </div>
 
-                    {/* Steps list */}
-                    <div className="space-y-2 pt-1 font-mono text-xs">
+                    <div className="space-y-1.5 pt-1 text-xs">
                       {latestRoadmap.steps.slice(0, 3).map((step: any, idx: number) => (
-                        <div key={idx} className="flex items-center justify-between p-2.5 bg-background border border-border/70">
-                          <div className="flex items-center gap-2.5 min-w-0">
+                        <div key={idx} className="flex items-center justify-between p-2 bg-background border border-border/70 rounded-md">
+                          <div className="flex items-center gap-2 min-w-0">
                             <span className={cn(
-                              "w-5 h-5 border flex items-center justify-center font-mono text-[10px] font-bold shrink-0",
+                              "w-5 h-5 rounded-full flex items-center justify-center font-mono text-[10px] font-bold shrink-0",
                               step.status === "done" 
-                                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500" 
-                                : "border-border text-muted-foreground"
+                                ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30" 
+                                : "bg-muted text-muted-foreground"
                             )}>
                               {step.status === "done" ? <Check size={11} /> : step.stepNumber}
                             </span>
                             <span className="truncate text-foreground font-medium">{step.title}</span>
                           </div>
                           <span className="text-[10px] text-muted-foreground uppercase font-mono shrink-0 pl-2">
-                            {step.status === "done" ? "DONE" : step.status === "in_progress" ? "IN PROGRESS" : "UPCOMING"}
+                            {step.status === "done" ? "Done" : step.status === "in_progress" ? "In Progress" : "Upcoming"}
                           </span>
                         </div>
                       ))}
@@ -542,46 +419,46 @@ export default function Dashboard() {
                 <button
                   type="button"
                   onClick={() => router.push(`/career-guide?roadmap=${latestRoadmap.id}`)}
-                  className="w-full py-2.5 border border-border/80 bg-muted/20 hover:bg-muted text-foreground font-mono text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2 border border-border bg-muted/30 hover:bg-muted text-foreground text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Continue Curriculum Path</span>
                   <ArrowRight size={13} />
                 </button>
               </div>
             ) : (
-              <div className="p-8 text-center space-y-3 font-mono text-xs">
-                <div className="w-10 h-10 border border-border bg-background flex items-center justify-center mx-auto text-muted-foreground">
+              <div className="p-8 text-center space-y-2.5 text-xs">
+                <div className="w-9 h-9 rounded-md bg-muted flex items-center justify-center mx-auto text-muted-foreground">
                   <Compass size={18} />
                 </div>
-                <div className="space-y-1">
-                  <p className="font-semibold text-foreground">No active roadmap saved yet</p>
-                  <p className="text-muted-foreground max-w-sm mx-auto text-[11px]">
-                    Ask Career Guide to synthesize a personalized step-by-step learning roadmap for your target job.
+                <div className="space-y-0.5">
+                  <p className="font-semibold text-foreground">No active roadmap saved</p>
+                  <p className="text-muted-foreground text-xs">
+                    Synthesize a step-by-step learning roadmap tailored to your target role.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => router.push("/career-guide?prompt=Make me a step-by-step career roadmap for my dream role")}
-                  className="px-4 py-2 border border-foreground bg-foreground text-background font-mono text-xs uppercase tracking-wider hover:opacity-90 transition-opacity inline-flex items-center gap-2 cursor-pointer"
+                  className="px-3.5 py-1.5 bg-foreground text-background text-xs font-semibold rounded-md hover:bg-foreground/90 transition-colors inline-flex items-center gap-1.5 cursor-pointer mt-1"
                 >
-                  <Sparkles size={13} />
+                  <Sparkles size={12} />
                   <span>Generate Roadmap</span>
                 </button>
               </div>
             )}
           </div>
 
-          {/* Section 03: Recent Resumes */}
-          <div className="border border-border/80 bg-card relative">
-            <div className="p-4 sm:p-5 border-b border-border/80 flex items-center justify-between bg-muted/15 font-mono text-xs">
-              <div className="flex items-center gap-2 text-foreground font-bold uppercase tracking-wider">
-                <FileText className="h-4 w-4 text-emerald-500" />
-                <span>03 // RECENT ATS RESUMES</span>
+          {/* Recent Resumes */}
+          <div className="border border-border/80 bg-card rounded-lg overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-border/80 flex items-center justify-between bg-muted/20">
+              <div className="flex items-center gap-2 text-foreground font-semibold text-xs uppercase tracking-wider">
+                <FileText size={14} className="text-emerald-500" />
+                <span>Recent Resumes</span>
               </div>
               <button 
                 type="button"
                 onClick={() => router.push("/saved-resumes")}
-                className="text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors uppercase tracking-wider cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
                 <span>View all ({stats.totalResumes})</span>
                 <ChevronRight size={13} />
@@ -589,9 +466,9 @@ export default function Dashboard() {
             </div>
 
             {loading ? (
-              <div className="p-6 space-y-3">
-                <div className="h-12 bg-muted/30 border border-border animate-pulse" />
-                <div className="h-12 bg-muted/30 border border-border animate-pulse" />
+              <div className="p-5 space-y-2">
+                <div className="h-10 bg-muted/40 rounded-md animate-pulse" />
+                <div className="h-10 bg-muted/40 rounded-md animate-pulse" />
               </div>
             ) : recentResumes.length > 0 ? (
               <div className="divide-y divide-border/60">
@@ -599,26 +476,24 @@ export default function Dashboard() {
                   <div 
                     key={resume.id}
                     onClick={() => router.push("/saved-resumes")}
-                    className="p-4 sm:p-5 flex items-center justify-between cursor-pointer hover:bg-muted/10 transition-colors group"
+                    className="p-4 flex items-center justify-between cursor-pointer hover:bg-muted/40 transition-colors group"
                   >
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="w-8 h-8 border border-border bg-background flex items-center justify-center shrink-0 text-muted-foreground group-hover:text-foreground group-hover:border-foreground transition-colors">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center shrink-0 text-muted-foreground group-hover:text-foreground transition-colors">
                         <FileText size={14} />
                       </div>
                       <div className="min-w-0">
-                        <h4 className="font-semibold text-sm text-foreground truncate group-hover:text-foreground transition-colors">
+                        <h4 className="font-medium text-xs sm:text-sm text-foreground truncate">
                           {resume.title || "Untitled Resume"}
                         </h4>
-                        <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground mt-0.5">
+                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
                           <Clock size={11} />
                           <span>Updated {formatDate(resume.updatedAt || resume.createdAt)}</span>
-                          <span className="text-border">//</span>
-                          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">ATS VALIDATED</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0 font-mono text-xs text-muted-foreground group-hover:text-foreground">
+                    <div className="flex items-center gap-1 shrink-0 text-xs text-muted-foreground group-hover:text-foreground">
                       <span className="hidden sm:inline">Inspect</span>
                       <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
                     </div>
@@ -626,17 +501,17 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center space-y-3 font-mono text-xs">
-                <div className="w-10 h-10 border border-border bg-background flex items-center justify-center mx-auto text-muted-foreground">
+              <div className="p-8 text-center space-y-2 text-xs">
+                <div className="w-9 h-9 rounded-md bg-muted flex items-center justify-center mx-auto text-muted-foreground">
                   <FileText size={18} />
                 </div>
-                <p className="font-semibold text-foreground">No resumes generated yet</p>
+                <p className="font-semibold text-foreground">No resumes created yet</p>
                 <button 
                   type="button"
                   onClick={() => router.push("/resume")}
-                  className="px-4 py-2 border border-foreground bg-foreground text-background font-mono text-xs uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer"
+                  className="px-3.5 py-1.5 bg-foreground text-background text-xs font-semibold rounded-md hover:bg-foreground/90 transition-colors cursor-pointer mt-1"
                 >
-                  Create LaTeX Resume
+                  Create Resume
                 </button>
               </div>
             )}
@@ -644,74 +519,68 @@ export default function Dashboard() {
 
         </div>
 
-        {/* Right Column (4 cols): Profile Health, Autopilots & WhatsApp */}
+        {/* Right Column (4 cols): Profile, Autopilots & WhatsApp */}
         <div className="lg:col-span-4 space-y-7">
           
           {/* Master Profile Health Card */}
-          <div className="border border-border/80 bg-card p-5 relative">
-            <CadCrosshair className="absolute -top-1.5 -left-1.5" size="text-[9px]" />
-            <CadCrosshair className="absolute -top-1.5 -right-1.5" size="text-[9px]" />
-
-            <div className="flex items-center justify-between border-b border-border/70 pb-3 mb-4 font-mono text-xs">
-              <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-foreground">
-                <User size={13} className="text-emerald-500" />
-                <span>PROFILE TELEMETRY</span>
+          <div className="border border-border/80 bg-card rounded-lg p-5 space-y-3.5">
+            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+              <div className="flex items-center gap-2 font-semibold text-xs uppercase tracking-wider text-foreground">
+                <User size={14} className="text-emerald-500" />
+                <span>Master Profile</span>
               </div>
               <button 
                 type="button"
                 onClick={() => router.push("/profile")}
-                className="text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors uppercase tracking-wider cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
                 <span>Edit</span>
                 <ChevronRight size={13} />
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-baseline justify-between font-mono">
-                <span className="text-xs text-muted-foreground uppercase">Completeness</span>
-                <span className="text-lg font-bold text-foreground">
+            <div className="space-y-3">
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs text-muted-foreground">Completeness</span>
+                <span className="text-sm font-bold text-foreground font-mono">
                   {stats.profileCompleteness}%
                 </span>
               </div>
 
-              {/* Progress gauge */}
-              <div className="w-full h-2 bg-muted border border-border/80 overflow-hidden">
+              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-emerald-500 transition-all duration-500"
+                  className="h-full bg-emerald-500 transition-all duration-500 rounded-full"
                   style={{ width: `${stats.profileCompleteness}%` }}
                 />
               </div>
 
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono text-[11px]">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <CheckCircle2 size={12} className={cn(stats.profileCompleteness >= 80 ? "text-emerald-500" : "text-muted-foreground")} />
                 <span>
                   {stats.profileCompleteness >= 80 
                     ? "Ready for high-precision tailoring"
-                    : "Add more details to increase match precision"}
+                    : "Complete profile to improve match scoring"}
                 </span>
               </div>
 
-              {/* Profile stats badges */}
               {userProfile && (
-                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border/60 font-mono text-[10px]">
-                  <span className="px-2 py-0.5 border border-border bg-background text-foreground/80">
+                <div className="flex flex-wrap gap-1.5 pt-1.5 border-t border-border/60 text-xs">
+                  <span className="px-2 py-0.5 rounded-md bg-muted text-foreground/80 font-mono text-[11px]">
                     {Array.isArray(userProfile.skills) ? userProfile.skills.length : 0} Skills
                   </span>
-                  <span className="px-2 py-0.5 border border-border bg-background text-foreground/80">
+                  <span className="px-2 py-0.5 rounded-md bg-muted text-foreground/80 font-mono text-[11px]">
                     {Array.isArray(userProfile.experience) ? userProfile.experience.length : 0} Jobs
                   </span>
-                  <span className="px-2 py-0.5 border border-border bg-background text-foreground/80">
+                  <span className="px-2 py-0.5 rounded-md bg-muted text-foreground/80 font-mono text-[11px]">
                     {Array.isArray(userProfile.projects) ? userProfile.projects.length : 0} Projects
                   </span>
                 </div>
               )}
 
-              {/* 1-Click Action to Import / Update */}
               <button
                 type="button"
                 onClick={() => router.push("/profile")}
-                className="w-full py-2 border border-border/80 hover:border-foreground/40 bg-background hover:bg-muted text-foreground text-xs font-mono uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer mt-2"
+                className="w-full py-2 border border-border bg-card hover:bg-muted text-foreground text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer mt-1"
               >
                 <Upload size={12} />
                 <span>Import from Resume</span>
@@ -719,56 +588,56 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Autopilot Agent Dispatch Queues */}
-          <div className="border border-border/80 bg-card p-5 relative">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3 mb-4 font-mono text-xs">
-              <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-foreground">
-                <Activity size={13} className="text-emerald-500" />
-                <span>AUTOPILOT DISPATCH</span>
+          {/* Autopilot Agent Queues */}
+          <div className="border border-border/80 bg-card rounded-lg p-5 space-y-3.5">
+            <div className="flex items-center justify-between border-b border-border/70 pb-3">
+              <div className="flex items-center gap-2 font-semibold text-xs uppercase tracking-wider text-foreground">
+                <Activity size={14} className="text-emerald-500" />
+                <span>Autopilot Agents</span>
               </div>
               <button 
                 type="button"
                 onClick={() => router.push("/autopilot")}
-                className="text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors uppercase tracking-wider cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
                 <span>Manage</span>
                 <ChevronRight size={13} />
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {recentSchedules.length > 0 ? (
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {recentSchedules.map((schedule) => (
-                    <div key={schedule.id} className="p-3 border border-border/70 bg-background font-mono text-xs space-y-1">
+                    <div key={schedule.id} className="p-2.5 border border-border/70 rounded-md bg-background text-xs space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-foreground truncate">{schedule.name}</span>
+                        <span className="font-medium text-foreground truncate">{schedule.name}</span>
                         <span className={cn(
-                          "text-[9.5px] px-1.5 py-0.5 font-semibold",
+                          "text-[9.5px] px-1.5 py-0.5 rounded-sm font-semibold font-mono",
                           schedule.isActive 
                             ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
-                            : "border border-border bg-muted/60 text-muted-foreground"
+                            : "border border-border bg-muted text-muted-foreground"
                         )}>
-                          {schedule.isActive ? "ACTIVE" : "PAUSED"}
+                          {schedule.isActive ? "Active" : "Paused"}
                         </span>
                       </div>
-                      <p className="text-[10px] text-muted-foreground truncate">
+                      <p className="text-[11px] text-muted-foreground truncate">
                         {schedule.targetRoles.join(", ")}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-6 space-y-2 font-mono text-xs">
-                  <Activity size={20} className="mx-auto text-muted-foreground opacity-40" />
-                  <p className="text-muted-foreground">No autopilot queues configured.</p>
+                <div className="text-center py-5 space-y-1 text-xs">
+                  <Activity size={18} className="mx-auto text-muted-foreground opacity-40" />
+                  <p className="text-muted-foreground">No autopilot queues created yet.</p>
                 </div>
               )}
 
               <button
                 type="button"
                 onClick={() => router.push("/autopilot")}
-                className="w-full py-2 border border-border/80 hover:border-foreground/40 bg-background hover:bg-muted text-foreground text-xs font-mono uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2 border border-border bg-card hover:bg-muted text-foreground text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Configure Autopilots</span>
                 <ArrowRight size={12} />
@@ -776,26 +645,26 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* SkillBridge WhatsApp Placement Alerts */}
-          <div className="border border-border/80 bg-card p-5 relative">
-            <div className="flex items-center justify-between border-b border-border/70 pb-3 mb-3 font-mono text-xs">
-              <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-foreground">
-                <MessageSquare size={13} className="text-emerald-500" />
-                <span>WHATSAPP COMPANION</span>
+          {/* SkillBridge WhatsApp Alerts */}
+          <div className="border border-border/80 bg-card rounded-lg p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-border/70 pb-2.5">
+              <div className="flex items-center gap-2 font-semibold text-xs uppercase tracking-wider text-foreground">
+                <MessageSquare size={14} className="text-emerald-500" />
+                <span>WhatsApp Alerts</span>
               </div>
-              <span className="px-1.5 py-0.5 border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-semibold">
-                LIVE
+              <span className="px-1.5 py-0.5 rounded-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[9px] font-semibold font-mono">
+                Live
               </span>
             </div>
 
-            <p className="text-xs text-muted-foreground leading-relaxed mb-4 font-mono text-[11px]">
-              Receive daily campus practice questions, roadmap milestone updates, and job match alerts on WhatsApp.
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Get daily placement practice questions, roadmap milestone updates, and job alerts directly on WhatsApp.
             </p>
 
             <button
               type="button"
               onClick={() => router.push("/whatsapp")}
-              className="w-full py-2 border border-emerald-600 bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs uppercase tracking-wider font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
             >
               <span>Connect on WhatsApp</span>
               <ArrowUpRight size={13} />

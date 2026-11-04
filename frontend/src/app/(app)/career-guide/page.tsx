@@ -749,27 +749,28 @@ export default function CareerGuidePage() {
       <aside
         className={`${
           showHistorySidebar ? "hidden md:flex" : "hidden"
-        } flex-col w-60 border-r border-border bg-sidebar shrink-0 h-full transition-all duration-200`}
+        } flex-col w-72 sm:w-80 border-r border-border bg-sidebar shrink-0 h-full transition-all duration-200 select-none`}
       >
-        <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
-          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            Conversations
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-sidebar/50">
+          <span className="font-mono text-xs uppercase tracking-wider font-semibold text-foreground">
+            Previous Chats
           </span>
           <AnimateIcon animateOnHover asChild>
             <button
               onClick={startNewChat}
-              className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent hover:border-border transition-colors rounded-none"
+              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/40 hover:border-border transition-colors rounded-none flex items-center gap-1.5 font-mono text-[11px] cursor-pointer"
               title="New Chat"
             >
               <Plus size={14} className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">New</span>
             </button>
           </AnimateIcon>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-1">
+        <div className="flex-1 overflow-y-auto py-2 divide-y divide-border/30">
           {conversations.length === 0 ? (
-            <div className="px-3 py-4 text-center">
-              <p className="text-[11px] text-muted-foreground font-mono">No conversations yet</p>
+            <div className="px-4 py-8 text-center">
+              <p className="text-xs text-muted-foreground font-mono">No previous chats yet</p>
             </div>
           ) : (
             conversations.map((conv) => (
@@ -784,25 +785,25 @@ export default function CareerGuidePage() {
                     loadConversation(conv.id);
                   }
                 }}
-                className={`w-full text-left flex items-center justify-between gap-1 px-3 py-2 text-xs transition-colors group cursor-pointer select-none border-l-2 ${
+                className={`w-full text-left flex items-center justify-between gap-2.5 px-4 py-3 transition-colors group cursor-pointer border-l-2 ${
                   conversationId === conv.id 
-                    ? "bg-muted text-foreground font-medium border-foreground" 
-                    : "border-transparent hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+                    ? "bg-muted/80 text-foreground font-semibold border-foreground" 
+                    : "border-transparent hover:bg-muted/40 text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-[11px]">{conv.title ?? "Untitled"}</div>
-                  <div className="flex items-center gap-1 mt-0.5 font-mono text-[10px] text-muted-foreground">
-                    <Clock size={10} className="w-2.5 h-2.5 text-muted-foreground/70" />
-                    {formatDate(conv.updatedAt)}
+                  <div className="truncate text-xs sm:text-[13px] leading-snug">{conv.title ?? "Untitled Conversation"}</div>
+                  <div className="flex items-center gap-1.5 mt-1 font-mono text-[11px] text-muted-foreground">
+                    <Clock size={11} className="w-3 h-3 text-muted-foreground/70" />
+                    <span>{formatDate(conv.updatedAt)}</span>
                   </div>
                 </div>
                 <AnimateIcon animateOnHover asChild>
                   <button
                     type="button"
                     onClick={(e) => deleteConversation(conv.id, e)}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-colors rounded-none cursor-pointer"
-                    title="Delete"
+                    className="opacity-0 group-hover:opacity-100 p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all rounded-none cursor-pointer"
+                    title="Delete Conversation"
                   >
                     <Trash2 size={14} className="w-3.5 h-3.5" />
                   </button>

@@ -22,7 +22,6 @@ export default function Navbar() {
     { label: t.nav.platform, href: "/#features" },
     { label: t.nav.campus, href: "/#campus" },
     { label: t.nav.multimodal, href: "/#multimodal" },
-    { label: t.nav.testimonials, href: "/#testimonials" },
     { label: t.nav.pricing, href: "/#pricing" },
     { label: t.nav.faq, href: "/#faq" },
   ];
@@ -30,16 +29,16 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-md">
       {/* Full-width container with generous edge-to-edge breathing space */}
-      <div className="w-full px-6 sm:px-12 lg:px-16 xl:px-20">
-        <div className="flex h-20 sm:h-24 items-center justify-between gap-12">
+      <div className="w-full px-6 sm:px-10 lg:px-14 xl:px-16">
+        <div className="flex h-16 sm:h-18 items-center justify-between gap-8">
           {/* Brand Mark using landing page heading typography */}
           <Link
             href="/"
             className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none shrink-0"
             aria-label="CareerCrewAI Home"
           >
-            <PandaLogo className="w-8 h-8 sm:w-9 sm:h-9 transition-transform group-hover:scale-105" />
-            <span className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-foreground select-none leading-none group-hover:opacity-85 transition-opacity">
+            <PandaLogo className="w-7 h-7 sm:w-8 sm:h-8 transition-transform group-hover:scale-105" />
+            <span className="font-heading text-xl sm:text-2xl font-bold tracking-tight text-foreground select-none leading-none group-hover:opacity-85 transition-opacity">
               CareerCrewAI
             </span>
           </Link>
@@ -47,7 +46,7 @@ export default function Navbar() {
           {/* Desktop Navigation with Expansive Negative Spacing */}
           <nav
             aria-label="Main Navigation"
-            className="hidden lg:flex items-center gap-5 xl:gap-8 font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground"
+            className="hidden lg:flex items-center gap-6 xl:gap-8 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground"
           >
             {navLinks.map((link) => (
               <Link

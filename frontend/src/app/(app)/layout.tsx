@@ -58,14 +58,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <GrainBackground className="opacity-20 mix-blend-multiply dark:hidden" />
 
           {/* Top bar with clean title and dark/light mode toggle */}
-          <header className="shrink-0 z-20 flex h-11 items-center justify-between border-b border-border/80 bg-background/90 backdrop-blur-md px-3 sm:px-4 shadow-xs">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:bg-muted/80 hover:text-foreground rounded-none transition-colors border border-border/40 hover:border-border flex items-center justify-center shrink-0 cursor-pointer" />
-              <Separator orientation="vertical" className="h-3.5 mx-1 opacity-60" />
-              <span className="text-xs font-semibold text-foreground tracking-tight flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                {getTitle(pathname)}
-              </span>
+          <header className="shrink-0 z-20 flex h-14 items-center justify-between border-b border-border/80 bg-background/90 backdrop-blur-md px-4 sm:px-6">
+            <div className="flex items-center gap-2.5">
+              <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors flex items-center justify-center shrink-0 cursor-pointer" />
+              <Separator orientation="vertical" className="h-4 mx-1 opacity-50" />
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
+                <span className="text-muted-foreground/70 hidden sm:inline font-normal">Workspace</span>
+                <span className="text-muted-foreground/30 hidden sm:inline">/</span>
+                <span className="font-semibold text-foreground flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  {getTitle(pathname)}
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <ModeToggle />

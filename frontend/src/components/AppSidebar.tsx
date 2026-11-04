@@ -343,19 +343,19 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
 
-      {/* ── Navigation List (Clear Separation, Generous Spacing) ───────── */}
-      <SidebarContent className="px-3 py-4 overflow-x-hidden overflow-y-auto flex-1 space-y-6">
-        {NAVIGATION_GROUPS.map((group, groupIdx) => (
+      {/* ── Navigation List (Balanced & Even Spacing) ───────────────── */}
+      <SidebarContent className="px-3 py-3 overflow-x-hidden overflow-y-auto flex-1 space-y-4">
+        {NAVIGATION_GROUPS.map((group) => (
           <SidebarGroup key={group.title} className="p-0">
-            {/* Subtle, Professional Category Label with Line Separation */}
-            <div className={cn("px-2.5 mb-2 select-none", groupIdx > 0 && "pt-4 border-t border-border/50")}>
-              <span className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider block">
+            {/* Subtle, Professional Category Label */}
+            <div className="px-2.5 mb-1.5 select-none">
+              <span className="text-[10.5px] font-mono font-semibold text-muted-foreground/70 uppercase tracking-wider block">
                 {group.title}
               </span>
             </div>
 
-            {/* Navigation Items (Comfortable 38px Height, Refined Rounded Pill) */}
-            <SidebarMenu className="gap-1">
+            {/* Navigation Items (Consistent 36px Height, 6px Even Gap) */}
+            <SidebarMenu className="gap-1.5">
               {group.items.map((item) => {
                 const active = isItemActive(item.href);
                 return (
@@ -365,11 +365,11 @@ export function AppSidebar() {
                       isActive={active}
                       tooltip={item.label}
                       className={cn(
-                        "group relative flex items-center h-9.5 rounded-md text-[13px] font-medium transition-colors select-none p-0 overflow-hidden",
+                        "group relative flex items-center h-9 rounded-md text-[13px] font-medium transition-all select-none p-0 overflow-hidden",
                         "group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:h-9",
                         active
-                          ? "text-foreground font-semibold"
-                          : "text-muted-foreground hover:text-foreground"
+                          ? "bg-muted/90 text-foreground font-semibold shadow-2xs"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                       )}
                     >
                       <Link
@@ -377,18 +377,9 @@ export function AppSidebar() {
                         prefetch={false}
                         className="relative flex items-center gap-3 w-full h-full px-2.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
                       >
-                        {/* Fluid Spring-Animated Active Indicator Pill */}
+                        {/* Active Left Indicator Bar */}
                         {active && (
-                          <motion.div
-                            layoutId="sidebarActiveIndicator"
-                            transition={{ type: "spring", stiffness: 450, damping: 35 }}
-                            className="absolute inset-0 bg-muted/90 dark:bg-neutral-800/80 rounded-md z-0 pointer-events-none border border-border/60 dark:border-neutral-700/60"
-                          />
-                        )}
-
-                        {/* Hover Layer when Inactive */}
-                        {!active && (
-                          <div className="absolute inset-0 bg-transparent group-hover:bg-muted/40 dark:group-hover:bg-neutral-800/40 rounded-md transition-colors z-0 pointer-events-none" />
+                          <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-emerald-500 rounded-full" />
                         )}
 
                         {/* Icon */}
@@ -396,7 +387,7 @@ export function AppSidebar() {
                           size={16}
                           animateOnHover
                           className={cn(
-                            "w-4 h-4 shrink-0 z-10 transition-colors",
+                            "w-4 h-4 shrink-0 z-10 transition-colors ml-0.5",
                             active
                               ? "text-foreground"
                               : "text-muted-foreground group-hover:text-foreground"

@@ -690,6 +690,10 @@ export default function CareerGuidePage() {
               }
             } else if (eventType === "error") {
               toast.error(data.msg || "Stream error");
+              // Remove empty placeholder assistant message
+              setMessages((prev) =>
+                prev.filter((m) => m.id !== assistantTempId || m.content.length > 0)
+              );
             }
           } catch (jsonErr) {
             console.warn("Failed to parse SSE data:", dataStr, jsonErr);

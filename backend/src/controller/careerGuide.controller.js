@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma.js";
+import prisma, { withRetry } from "../lib/prisma.js";
 import { runCareerGuideAgent, runCareerGuideAgentStream, parseResumeText } from "../agents/careerGuide/agent.js";
 import { detectLanguage } from "../agents/careerGuide/languageDetect.js";
 import { PDFParse } from "pdf-parse";
@@ -9,15 +9,15 @@ import { PDFParse } from "pdf-parse";
 
 // Helper to resolve user profile across CGResumeProfile and Master UserProfile
 async function getUserProfileWithFallback(userId) {
-  let profile = await prisma.cGResumeProfile.findUnique({
-    where: { userId },
-  });
+  let profile = await withRetry(() =>
+    prisma.cGResumeProfile.findUnique({ where: { userId } })
+  ).catch(() => null);
 
   // If no CGResumeProfile exists or it lacks skills, fallback to Master UserProfile
   if (!profile || (!profile.fullName && (!profile.skills || (Array.isArray(profile.skills) && profile.skills.length === 0)))) {
-    const masterProfile = await prisma.userProfile.findUnique({
-      where: { userId },
-    });
+    const masterProfile = await withRetry(() =>
+      prisma.userProfile.findUnique({ where: { userId } })
+    ).catch(() => null);
     if (masterProfile) {
       profile = {
         fullName: masterProfile.fullName,
@@ -33,9 +33,9 @@ async function getUserProfileWithFallback(userId) {
   }
 
   // Also check if user has target roles from active autopilot schedules
-  const schedule = await prisma.jobSchedule.findFirst({
-    where: { userId, isActive: true },
-  });
+  const schedule = await withRetry(() =>
+    prisma.jobSchedule.findFirst({ where: { userId, isActive: true } })
+  ).catch(() => null);
   if (schedule && Array.isArray(schedule.targetRoles) && schedule.targetRoles.length > 0) {
     if (!profile) {
       profile = {
@@ -156,30 +156,47 @@ export const chat = async (req, res) => {
 
 // ─── POST /api/career-guide/chat/stream ───────────────────────────────────────
 export const chatStream = async (req, res) => {
+  const userId = req.user.id;
+  const { conversationId, message, language } = req.body;
+
+  if (!message || typeof message !== "string" || !message.trim()) {
+    return res.status(400).json({ msg: "Message content is required" });
+  }
+
+  // ── Flush SSE headers immediately so ALL errors can be sent as SSE events ──
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache, no-transform");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders?.();
+
+  const sendEvent = (event, data) => {
+    try {
+      res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+    } catch (_) {}
+  };
+
   try {
-    const userId = req.user.id;
-    const { conversationId, message, language } = req.body;
-
-    if (!message || typeof message !== "string" || !message.trim()) {
-      return res.status(400).json({ msg: "Message content is required" });
-    }
-
+    // ── Find or create conversation (with retry for Neon cold-start) ──────────
     let conversation;
     if (conversationId) {
-      conversation = await prisma.cGConversation.findFirst({
-        where: { id: conversationId, userId },
-      });
+      conversation = await withRetry(() =>
+        prisma.cGConversation.findFirst({ where: { id: conversationId, userId } })
+      );
       if (!conversation) {
-        return res.status(404).json({ msg: "Conversation not found" });
+        sendEvent("error", { msg: "Conversation not found" });
+        return res.end();
       }
     } else {
-      conversation = await prisma.cGConversation.create({
-        data: {
-          userId,
-          title: message.trim().slice(0, 60),
-          language: language || "auto",
-        },
-      });
+      conversation = await withRetry(() =>
+        prisma.cGConversation.create({
+          data: {
+            userId,
+            title: message.trim().slice(0, 60),
+            language: language || "auto",
+          },
+        })
+      );
     }
 
     // Determine language
@@ -187,20 +204,24 @@ export const chatStream = async (req, res) => {
       language && language !== "auto" ? language : detectLanguage(message);
 
     // Save the user's message
-    await prisma.cGMessage.create({
-      data: {
-        conversationId: conversation.id,
-        role: "user",
-        content: message.trim(),
-      },
-    });
+    await withRetry(() =>
+      prisma.cGMessage.create({
+        data: {
+          conversationId: conversation.id,
+          role: "user",
+          content: message.trim(),
+        },
+      })
+    );
 
-    // Load recent history (last 30 messages to preserve full mock interview context)
-    const recentMessages = await prisma.cGMessage.findMany({
-      where: { conversationId: conversation.id },
-      orderBy: { createdAt: "desc" },
-      take: 30,
-    });
+    // Load recent history (last 30 messages)
+    const recentMessages = await withRetry(() =>
+      prisma.cGMessage.findMany({
+        where: { conversationId: conversation.id },
+        orderBy: { createdAt: "desc" },
+        take: 30,
+      })
+    );
     const conversationHistory = recentMessages
       .reverse()
       .map((m) => {
@@ -212,21 +233,10 @@ export const chatStream = async (req, res) => {
         return { role: m.role, content: content.trim() };
       });
 
-    // Fetch user's profile context (from CGResumeProfile, Master UserProfile, or active schedules)
+    // Fetch user's profile context
     const userProfile = await getUserProfileWithFallback(userId);
 
-    // Setup Server-Sent Events headers
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache, no-transform");
-    res.setHeader("Connection", "keep-alive");
-    res.setHeader("X-Accel-Buffering", "no");
-    res.flushHeaders?.();
-
-    const sendEvent = (event, data) => {
-      res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
-    };
-
-    // 1. Initial event with conversationId
+    // Send init event with conversationId
     sendEvent("init", { conversationId: conversation.id });
 
     let fullText = "";
@@ -251,21 +261,25 @@ export const chatStream = async (req, res) => {
     const finalContent = fullText || textContent || "";
     const finalPayload = capturedCard || cardPayload || null;
 
-    // Save assistant message in database
-    const assistantMsg = await prisma.cGMessage.create({
-      data: {
-        conversationId: conversation.id,
-        role: "assistant",
-        content: finalContent,
-        cardPayload: finalPayload,
-      },
-    });
+    // Save assistant message
+    const assistantMsg = await withRetry(() =>
+      prisma.cGMessage.create({
+        data: {
+          conversationId: conversation.id,
+          role: "assistant",
+          content: finalContent,
+          cardPayload: finalPayload,
+        },
+      })
+    );
 
     // Update conversation updatedAt
-    await prisma.cGConversation.update({
-      where: { id: conversation.id },
-      data: { updatedAt: new Date() },
-    });
+    await withRetry(() =>
+      prisma.cGConversation.update({
+        where: { id: conversation.id },
+        data: { updatedAt: new Date() },
+      })
+    ).catch(() => {}); // non-critical, don't fail the response
 
     // Send done event
     sendEvent("done", {
@@ -278,15 +292,15 @@ export const chatStream = async (req, res) => {
     res.end();
   } catch (error) {
     console.error("[CareerGuide Controller] chatStream error:", error);
-    if (!res.headersSent) {
-      res.status(500).json({
-        msg: "An error occurred while streaming response",
-        error: error.message,
-      });
-    } else {
-      res.write(`event: error\ndata: ${JSON.stringify({ msg: error.message })}\n\n`);
-      res.end();
-    }
+    const isDbDown =
+      error?.code === "P1001" ||
+      error?.code === "P1002" ||
+      (error?.message && error.message.includes("Can't reach database"));
+    const userMsg = isDbDown
+      ? "Service is temporarily unavailable (database is waking up). Please try again in a few seconds."
+      : "An error occurred while processing your request. Please try again.";
+    sendEvent("error", { msg: userMsg });
+    res.end();
   }
 };
 

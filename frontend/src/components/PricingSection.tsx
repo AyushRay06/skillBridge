@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Check, ArrowRight, ShieldCheck } from "lucide-react";
 import { HatchedBlock, CadCrosshair, CrisscrossBox, StraightLinePattern, CadStraightLineBorder } from "./CadAccents";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 /**
  * CadCurrencySchematic
@@ -145,17 +146,18 @@ function CadCurrencySchematic() {
 }
 
 export default function PricingSection() {
+  const { t } = useLandingLanguage();
   const [hoveredPlan, setHoveredPlan] = useState<string | null>(null);
 
   const plans = [
     {
       id: "free",
       tag: "TIER 01",
-      name: "Starter",
-      description: "For creating and exporting verified ATS resume assets.",
+      name: t.pricing.starter.name,
+      description: t.pricing.starter.desc,
       price: "$0",
       cadence: "/ month",
-      cta: { label: "Get Started Free", href: "/signup", variant: "outline" },
+      cta: { label: t.pricing.starter.cta, href: "/signup", variant: "outline" },
       features: [
         "1 ATS Resume creation / day",
         "LaTeX and Vector PDF export",
@@ -165,12 +167,12 @@ export default function PricingSection() {
     {
       id: "pro",
       tag: "TIER 02",
-      name: "Pro Autopilot",
-      description: "For active candidates seeking consistent weekly interviews.",
+      name: t.pricing.pro.name,
+      description: t.pricing.pro.desc,
       price: "$3",
       cadence: "/ month",
       popular: true,
-      cta: { label: "Start Free Trial", href: "/signup", variant: "solid" },
+      cta: { label: t.pricing.pro.cta, href: "/signup", variant: "solid" },
       features: [
         "Continuous 24/7 background crawler",
         "Unlimited manual LaTeX creations",
@@ -180,11 +182,11 @@ export default function PricingSection() {
     {
       id: "elite",
       tag: "TIER 03",
-      name: "Elite Autonomous",
-      description: "High-volume execution with zero limits or queue delays.",
+      name: t.pricing.elite.name,
+      description: t.pricing.elite.desc,
       price: "$16",
       cadence: "/ month",
-      cta: { label: "Get Started Now", href: "/signup", variant: "outline" },
+      cta: { label: t.pricing.elite.cta, href: "/signup", variant: "outline" },
       features: [
         "Unlimited autonomous agent dispatches",
         "Priority recruiter contact discovery",
@@ -206,7 +208,7 @@ export default function PricingSection() {
             ///
           </span>
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-            TRANSPARENT PRICING
+            {t.pricing.sectionTag}
           </span>
           <StraightLinePattern direction="horizontal" size="w-8 h-3 hidden sm:block opacity-60 ml-2" />
         </div>
@@ -214,10 +216,10 @@ export default function PricingSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-              Simple, transparent plans
+              {t.pricing.heading}
             </h2>
             <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl">
-              No hidden fees. Choose your application volume and cancel anytime.
+              {t.pricing.subheading}
             </p>
           </div>
 

@@ -8,7 +8,7 @@ import {
   AlertCircle, Loader2, Download, Search, Award, Mail, 
   Activity, ArrowRight, ShieldAlert, Terminal, RefreshCw,
   ChevronRight, Eye, ExternalLink, Code2, Layers, CheckSquare, Plus
-} from "lucide-react";
+} from "@/components/animate-ui/icons";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { FullPageSkeleton, ApplyPageSkeleton } from "@/components/skeletons";

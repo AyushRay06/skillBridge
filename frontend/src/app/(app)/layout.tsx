@@ -9,11 +9,13 @@ import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";
 import { FullPageSkeleton } from "@/components/skeletons";
 import GrainBackground from "@/components/GrainBackground";
+import { ModeToggle } from "@/components/theme-toggle";
 
 // Map routes to readable page titles
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/jobs": "Jobs",
+  "/saved-jobs": "Saved Jobs",
   "/saved-resumes": "Saved Resumes",
   "/resume": "Create Resume",
   "/apply": "One-click",
@@ -21,6 +23,8 @@ const PAGE_TITLES: Record<string, string> = {
   "/profile": "Master Profile",
   "/billing": "Billing",
   "/settings": "Settings",
+  "/career-guide": "Career Guide",
+  "/whatsapp": "WhatsApp Agent",
 };
 
 function getTitle(pathname: string) {
@@ -43,29 +47,37 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (isLoading || !isAuthenticated) return <FullPageSkeleton />;
 
+  const isChatRoute = pathname.startsWith("/career-guide");
+
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset className="min-h-screen bg-background text-foreground overflow-x-hidden relative flex flex-col">
-        {/* Grain texture layer placed behind page canvas */}
-        <GrainBackground className="opacity-20 mix-blend-multiply dark:opacity-15 dark:mix-blend-screen" />
+    <div className="fixed inset-0 overflow-hidden bg-background text-foreground flex flex-col">
+      <SidebarProvider className="h-full w-full min-h-0 flex-1 overflow-hidden flex flex-row">
+        <AppSidebar />
+        <SidebarInset className="h-full min-h-0 w-full flex-1 flex flex-col overflow-hidden relative bg-background text-foreground">
+          {/* Grain texture layer placed behind page canvas in light mode (hidden in dark mode for pure OLED black) */}
+          <GrainBackground className="opacity-20 mix-blend-multiply dark:hidden" />
 
-        {/* Top bar with clean title */}
-        <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center justify-between border-b border-border bg-background/95 backdrop-blur-xs px-3 sm:px-4">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1 h-7 w-7 text-muted-foreground hover:bg-muted hover:text-foreground rounded-none transition-colors border border-transparent hover:border-border" />
-            <Separator orientation="vertical" className="h-3.5 mx-1" />
-            <span className="text-xs font-semibold text-foreground tracking-tight">
-              {getTitle(pathname)}
-            </span>
+          {/* Top bar with clean title and dark/light mode toggle */}
+          <header className="shrink-0 z-20 flex h-11 items-center justify-between border-b border-border/80 bg-background/90 backdrop-blur-md px-3 sm:px-4 shadow-xs">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:bg-muted/80 hover:text-foreground rounded-none transition-colors border border-border/40 hover:border-border flex items-center justify-center shrink-0 cursor-pointer" />
+              <Separator orientation="vertical" className="h-3.5 mx-1 opacity-60" />
+              <span className="text-xs font-semibold text-foreground tracking-tight flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                {getTitle(pathname)}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ModeToggle />
+            </div>
+          </header>
+
+          {/* Page content */}
+          <div className={`relative z-10 flex-1 min-h-0 w-full flex flex-col ${isChatRoute ? "overflow-hidden" : "overflow-y-auto"}`}>
+            {children}
           </div>
-        </header>
-
-        {/* Page content */}
-        <main className="relative z-10 flex-1">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }

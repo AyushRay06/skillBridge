@@ -17,10 +17,7 @@ export const jobAutopilotFunction = inngest.createFunction(
     id: "job-autopilot",
     name: "Job Autopilot",
     retries: 3,
-    throttle: {
-      limit: 2,
-      period: "1m",
-    },
+    // Throttling removed for hackathon showcase so runs execute immediately
     triggers: [{ event: "autopilot/run.requested" }],
   },
   async ({ event, step }) => {

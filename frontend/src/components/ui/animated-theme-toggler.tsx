@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Moon, Sun } from "lucide-react"
+import { Moon, Sun } from "@/components/animate-ui/icons"
 import { flushSync } from "react-dom"
 
 import { cn } from "@/lib/utils"
@@ -193,7 +193,7 @@ export const AnimatedThemeToggler = ({
       const newTheme = !isDark
       // Always toggle the class synchronously so the View Transitions API
       // snapshots the new theme inside the startViewTransition callback.
-      document.documentElement.classList.toggle("dark")
+      document.documentElement.classList.toggle("dark", newTheme)
       if (isControlled) {
         onThemeChange?.(newTheme ? "dark" : "light")
       } else {

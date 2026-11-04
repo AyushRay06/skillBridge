@@ -14,7 +14,7 @@ import {
   AlertCircle,
   Receipt,
   CheckCircle2,
-} from "lucide-react";
+} from "@/components/animate-ui/icons";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { axiosAPI } from "@/lib/axiosInterface";

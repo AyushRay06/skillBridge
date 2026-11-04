@@ -1,8 +1,12 @@
 "use client";
 
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { axiosAPI } from "@/lib/axiosInterface";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   FileText,
@@ -11,21 +15,25 @@ import {
   User,
   CreditCard,
   LogOut,
-  ChevronUp,
+  ChevronDown,
   Plus,
   Briefcase,
-} from "lucide-react";
+  Compass,
+  Map,
+  Star,
+} from "@/components/animate-ui/icons";
+import { ChevronsUpDown, MessageSquare } from "lucide-react";
+import { PandaLogo } from "@/components/PandaLogo";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
+  SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -34,135 +42,248 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ModeToggle } from "@/components/theme-toggle";
 
-// ─── Navigation Config (Categorized) ──────────────────────────
-
-// 1. Overview (Dashboard)
-const overviewItems = [
-  {
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    href: "/dashboard",
-  },
-];
-
-// 2. Create & Autopilot
-const creationItems = [
-  {
-    label: "Create New Resume",
-    icon: Plus,
-    href: "/resume",
-  },
-  {
-    label: "One-Click Automation",
-    icon: Sparkles,
-    href: "/apply",
-  },
-  {
-    label: "Job Autopilot",
-    icon: Activity,
-    href: "/autopilot",
-  },
-];
-
-// 3. Jobs & Resumes
-const jobItems = [
-  {
-    label: "Jobs",
-    icon: Briefcase,
-    href: "/jobs",
-  },
-  {
-    label: "Saved Resumes",
-    icon: FileText,
-    href: "/saved-resumes",
-  },
-];
-
-// 4. Master Profile
-const profileItems = [
-  {
-    label: "Master Profile",
-    icon: User,
-    href: "/profile",
-  },
-];
-
-// 5. Billing
-const billingItems = [
-  {
-    label: "Billing",
-    icon: CreditCard,
-    href: "/billing",
-  },
-];
+// ─── Professional Navigation Configuration ──────────────────────────────────
 
 interface NavItem {
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; size?: number; animateOnHover?: boolean }>;
   href: string;
+  badge?: React.ReactNode;
 }
 
-// ─── Reusable NavGroup with Subtle Division ───────────────────
-function NavGroup({
-  label,
-  items,
-  pathname,
-}: {
-  label?: string;
+interface NavGroup {
+  title: string;
   items: NavItem[];
-  pathname: string;
-}) {
-  const isActive = (href: string) =>
-    href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
+}
+
+const NAVIGATION_GROUPS: NavGroup[] = [
+  {
+    title: "Workspace",
+    items: [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        href: "/dashboard",
+      },
+    ],
+  },
+  {
+    title: "Applications",
+    items: [
+      {
+        label: "Job Autopilot",
+        icon: Activity,
+        href: "/autopilot",
+        badge: (
+          <span className="inline-flex items-center gap-1 font-mono text-[9.5px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium border border-emerald-500/20 select-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+            Live
+          </span>
+        ),
+      },
+      {
+        label: "One-Click Apply",
+        icon: Sparkles,
+        href: "/apply",
+      },
+      {
+        label: "Create Resume",
+        icon: Plus,
+        href: "/resume",
+      },
+    ],
+  },
+  {
+    title: "Discovery",
+    items: [
+      {
+        label: "Jobs Explorer",
+        icon: Briefcase,
+        href: "/jobs",
+      },
+      {
+        label: "Saved Jobs",
+        icon: Star,
+        href: "/saved-jobs",
+      },
+      {
+        label: "Saved Resumes",
+        icon: FileText,
+        href: "/saved-resumes",
+      },
+    ],
+  },
+  {
+    title: "Career Advisory",
+    items: [
+      {
+        label: "Career Guide",
+        icon: Compass,
+        href: "/career-guide",
+        badge: (
+          <span className="font-mono text-[9.5px] px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground font-medium border border-border select-none">
+            AI
+          </span>
+        ),
+      },
+      {
+        label: "WhatsApp Bot",
+        icon: MessageSquare,
+        href: "/whatsapp",
+        badge: (
+          <span className="inline-flex items-center gap-1 font-mono text-[9.5px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium border border-emerald-500/20 select-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+            Live
+          </span>
+        ),
+      },
+    ],
+  },
+  {
+    title: "Settings",
+    items: [
+      {
+        label: "Master Profile",
+        icon: User,
+        href: "/profile",
+      },
+      {
+        label: "Billing & Plans",
+        icon: CreditCard,
+        href: "/billing",
+      },
+    ],
+  },
+];
+
+// ─── Roadmaps Nested Section ────────────────────────────────────────────────
+
+interface SavedRoadmap {
+  id: string;
+  title: string;
+  targetRole?: string;
+}
+
+function RoadmapsSubSection({ pathname }: { pathname: string }) {
+  const { isAuthenticated } = useAuth();
+  const [roadmaps, setRoadmaps] = useState<SavedRoadmap[]>([]);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeRoadmapId, setActiveRoadmapId] = useState<string | null>(null);
+
+  const fetchRoadmaps = useCallback(() => {
+    if (!isAuthenticated) return;
+    axiosAPI
+      .get("/career-guide/roadmaps")
+      .then((res) => {
+        setRoadmaps(res.data.roadmaps ?? res.data ?? []);
+      })
+      .catch(() => {
+        // silently fail
+      });
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    fetchRoadmaps();
+  }, [fetchRoadmaps]);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      fetchRoadmaps();
+    };
+    window.addEventListener("skillbridge:roadmap-updated", handleUpdate);
+    return () => {
+      window.removeEventListener("skillbridge:roadmap-updated", handleUpdate);
+    };
+  }, [fetchRoadmaps]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const currentId = params.get("roadmap");
+      setActiveRoadmapId(currentId);
+      if (currentId) {
+        setIsExpanded(true);
+      }
+    }
+  }, [pathname]);
+
+  if (!roadmaps.length) return null;
 
   return (
-    <SidebarGroup className="p-0 py-0.5">
-      {label && (
-        <SidebarGroupLabel className="h-5 px-2 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider select-none">
-          {label}
-        </SidebarGroupLabel>
-      )}
-      <SidebarMenu className="gap-0.5">
-        {items.map((item) => {
-          const active = isActive(item.href);
-          return (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={active}
-                tooltip={item.label}
-                className={`
-                  group relative flex items-center gap-2.5 h-8 rounded-none text-xs font-medium
-                  transition-colors
-                  group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0
-                  ${
-                    active
-                      ? "bg-zinc-200/90 dark:bg-zinc-800/90 text-foreground font-semibold"
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                  }
-                `}
-              >
-                <Link href={item.href} className="flex items-center gap-2.5 w-full">
-                  <item.icon
-                    className={`w-3.5 h-3.5 shrink-0 transition-colors ${
-                      active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
-                    }`}
-                  />
-                  <span className="flex-1 truncate group-data-[collapsible=icon]:hidden">
-                    {item.label}
-                  </span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          );
-        })}
-      </SidebarMenu>
-    </SidebarGroup>
+    <div className="mt-1">
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          onClick={() => setIsExpanded((prev) => !prev)}
+          tooltip="Saved Roadmaps"
+          className="group relative flex items-center h-9 rounded-md text-[13px] font-medium transition-colors text-muted-foreground hover:bg-muted/50 hover:text-foreground cursor-pointer px-2.5 select-none"
+        >
+          <Map className="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" />
+          <span className="flex-1 truncate group-data-[collapsible=icon]:hidden tracking-tight">
+            Saved Roadmaps
+          </span>
+          <span className="font-mono text-[10px] px-1.5 py-0.2 rounded-md border border-border bg-muted/60 text-muted-foreground group-data-[collapsible=icon]:hidden shrink-0">
+            {roadmaps.length}
+          </span>
+          <ChevronDown
+            className={cn(
+              "w-3.5 h-3.5 text-muted-foreground group-data-[collapsible=icon]:hidden shrink-0 transition-transform duration-200",
+              isExpanded ? "rotate-180 text-foreground" : ""
+            )}
+          />
+        </SidebarMenuButton>
+
+        {/* Smooth Accordion Motion with Framer Motion */}
+        <AnimatePresence initial={false}>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="overflow-hidden group-data-[collapsible=icon]:hidden"
+            >
+              <div className="pl-3 pr-1 py-1 mt-0.5 space-y-0.5 border-l border-border/70 ml-4.5">
+                {roadmaps.map((rm) => {
+                  const isActive = activeRoadmapId === rm.id;
+                  const href = `/career-guide?roadmap=${rm.id}`;
+                  return (
+                    <Link
+                      key={rm.id}
+                      href={href}
+                      prefetch={false}
+                      className={cn(
+                        "group/rm flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
+                        isActive
+                          ? "bg-muted text-foreground font-semibold"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                      )}
+                      title={rm.title}
+                    >
+                      <span
+                        className={cn(
+                          "w-1.5 h-1.5 rounded-full shrink-0 transition-colors",
+                          isActive
+                            ? "bg-foreground"
+                            : "bg-muted-foreground/40 group-hover/rm:bg-foreground"
+                        )}
+                      />
+                      <span className="truncate leading-tight">{rm.title}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </SidebarMenuItem>
+    </div>
   );
 }
 
-// ─── User Initials Helper ─────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
 function getInitials(name: string | undefined) {
   if (!name) return "U";
   return name
@@ -173,7 +294,8 @@ function getInitials(name: string | undefined) {
     .slice(0, 2);
 }
 
-// ─── AppSidebar ───────────────────────────────────────────────
+// ─── Main AppSidebar Component ──────────────────────────────────────────────
+
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -186,129 +308,234 @@ export function AppSidebar() {
     router.push("/");
   };
 
+  const isItemActive = (href: string) =>
+    href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
+
   return (
-    <Sidebar collapsible="icon" className="border-r border-border bg-sidebar select-none">
-      {/* ── Brand Header (Deploy/Career Heading Typography) ─── */}
-      <SidebarHeader className="h-12 px-4 flex flex-row items-center border-b border-border transition-all group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center">
-        <Link href="/dashboard" className="flex items-center group w-full overflow-hidden group-data-[collapsible=icon]:justify-center">
-          {!isCollapsed ? (
-            <span className="font-heading text-base font-bold tracking-tight text-foreground select-none leading-none group-hover:opacity-85 transition-opacity truncate">
-              CareerCrewAI
-            </span>
-          ) : (
-            <span className="font-heading text-sm font-bold tracking-tight text-foreground select-none leading-none mx-auto">
-              CC
-            </span>
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-border bg-sidebar text-foreground select-none flex flex-col justify-between"
+    >
+      {/* ── Professional Workspace Header ───────────────────────────────── */}
+      <SidebarHeader className="h-14 px-3.5 flex flex-row items-center border-b border-border/80 bg-sidebar transition-all group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center shrink-0">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2.5 group w-full overflow-hidden group-data-[collapsible=icon]:justify-center select-none"
+        >
+          {/* Brand Icon Box */}
+          <div className="w-8 h-8 rounded-md border border-border/80 bg-card flex items-center justify-center shrink-0 transition-all duration-200 group-hover:border-foreground/40 shadow-2xs">
+            <PandaLogo className="w-5 h-5" />
+          </div>
+
+          {!isCollapsed && (
+            <div className="flex flex-col min-w-0 leading-tight">
+              <span className="font-heading text-sm font-bold tracking-tight text-foreground truncate flex items-center gap-1.5">
+                CareerCrew
+                <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded-sm bg-muted text-muted-foreground border border-border/60">
+                  AI
+                </span>
+              </span>
+              <span className="text-[11px] text-muted-foreground/80 truncate">
+                Personal Workspace
+              </span>
+            </div>
           )}
         </Link>
       </SidebarHeader>
 
-      {/* ── Navigation Content (Subtle Dividers & Compact Categorization) ── */}
-      <SidebarContent className="px-2 py-2 overflow-x-hidden overflow-y-auto">
-        {/* 1. Dashboard */}
-        <NavGroup items={overviewItems} pathname={pathname} />
+      {/* ── Navigation List (Clear Separation, Generous Spacing) ───────── */}
+      <SidebarContent className="px-3 py-4 overflow-x-hidden overflow-y-auto flex-1 space-y-6">
+        {NAVIGATION_GROUPS.map((group, groupIdx) => (
+          <SidebarGroup key={group.title} className="p-0">
+            {/* Subtle, Professional Category Label with Line Separation */}
+            <div className={cn("px-2.5 mb-2 select-none", groupIdx > 0 && "pt-4 border-t border-border/50")}>
+              <span className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider block">
+                {group.title}
+              </span>
+            </div>
 
-        <SidebarSeparator className="my-1.5 mx-1 opacity-40" />
+            {/* Navigation Items (Comfortable 38px Height, Refined Rounded Pill) */}
+            <SidebarMenu className="gap-1">
+              {group.items.map((item) => {
+                const active = isItemActive(item.href);
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      tooltip={item.label}
+                      className={cn(
+                        "group relative flex items-center h-9.5 rounded-md text-[13px] font-medium transition-colors select-none p-0 overflow-hidden",
+                        "group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:h-9",
+                        active
+                          ? "text-foreground font-semibold"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <Link
+                        href={item.href}
+                        prefetch={false}
+                        className="relative flex items-center gap-3 w-full h-full px-2.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+                      >
+                        {/* Fluid Spring-Animated Active Indicator Pill */}
+                        {active && (
+                          <motion.div
+                            layoutId="sidebarActiveIndicator"
+                            transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                            className="absolute inset-0 bg-muted/90 dark:bg-neutral-800/80 rounded-md z-0 pointer-events-none border border-border/60 dark:border-neutral-700/60"
+                          />
+                        )}
 
-        {/* 2. Create & Autopilot */}
-        <NavGroup
-          label="Create & Autopilot"
-          items={creationItems}
-          pathname={pathname}
-        />
+                        {/* Hover Layer when Inactive */}
+                        {!active && (
+                          <div className="absolute inset-0 bg-transparent group-hover:bg-muted/40 dark:group-hover:bg-neutral-800/40 rounded-md transition-colors z-0 pointer-events-none" />
+                        )}
 
-        <SidebarSeparator className="my-1.5 mx-1 opacity-40" />
+                        {/* Icon */}
+                        <item.icon
+                          size={16}
+                          animateOnHover
+                          className={cn(
+                            "w-4 h-4 shrink-0 z-10 transition-colors",
+                            active
+                              ? "text-foreground"
+                              : "text-muted-foreground group-hover:text-foreground"
+                          )}
+                        />
 
-        {/* 3. Jobs & Resumes */}
-        <NavGroup
-          label="Jobs & Resumes"
-          items={jobItems}
-          pathname={pathname}
-        />
+                        {/* Label */}
+                        <span className="flex-1 truncate group-data-[collapsible=icon]:hidden z-10 tracking-tight">
+                          {item.label}
+                        </span>
 
-        <SidebarSeparator className="my-1.5 mx-1 opacity-40" />
+                        {/* Badge */}
+                        {item.badge && (
+                          <div className="z-10 group-data-[collapsible=icon]:hidden">
+                            {item.badge}
+                          </div>
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
 
-        {/* 4. Master Profile */}
-        <NavGroup
-          label="Profile"
-          items={profileItems}
-          pathname={pathname}
-        />
-
-        <SidebarSeparator className="my-1.5 mx-1 opacity-40" />
-
-        {/* 5. Billing */}
-        <NavGroup
-          label="Billing"
-          items={billingItems}
-          pathname={pathname}
-        />
+              {/* Nested Roadmaps under Career Advisory */}
+              {group.title === "Career Advisory" && (
+                <RoadmapsSubSection pathname={pathname} />
+              )}
+            </SidebarMenu>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
 
-      {/* ── User Footer (Profile Icon at the bottom) ────────── */}
-      <SidebarFooter className="px-2 pb-2">
-        <SidebarMenu className="gap-1">
+      {/* ── Professional User Profile Footer ───────────────────────────── */}
+      <SidebarFooter className="p-2.5 border-t border-border/80 bg-sidebar shrink-0">
+        <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   tooltip={user?.fullName ?? "Account"}
-                  className="h-auto p-1.5 rounded-none border border-border/50 hover:bg-muted/60 transition-colors"
+                  className="h-auto p-2 rounded-md border border-border/60 hover:bg-muted/50 hover:border-border transition-all select-none cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5 w-full min-w-0">
-                    {/* Square Avatar Profile Icon */}
+                    {/* User Avatar */}
                     {user?.avatar ? (
                       <img
                         src={user.avatar}
                         alt={user.fullName || "User"}
-                        className="w-7 h-7 group-data-[collapsible=icon]:w-5 group-data-[collapsible=icon]:h-5 rounded-none shrink-0 border border-border object-cover"
+                        className="w-8 h-8 rounded-full border border-border object-cover shrink-0"
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="w-7 h-7 group-data-[collapsible=icon]:w-5 group-data-[collapsible=icon]:h-5 rounded-none bg-muted border border-border flex items-center justify-center font-mono text-[10px] font-semibold text-foreground shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center font-mono text-[11px] font-semibold text-foreground shrink-0">
                         {getInitials(user?.fullName)}
                       </div>
                     )}
+
                     {!isCollapsed && (
                       <>
                         <div className="flex flex-col leading-tight flex-1 min-w-0 text-left">
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="text-xs font-medium text-foreground truncate">
+                            <span className="text-xs font-semibold text-foreground truncate">
                               {user?.fullName ?? "User"}
                             </span>
-                            {user?.subscriptionPlan && user.subscriptionPlan !== "free" && (
-                              <span className="font-mono text-[8px] uppercase tracking-wider px-1 py-0.2 bg-foreground text-background font-bold shrink-0">
+                            {user?.subscriptionPlan && (
+                              <span className="font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.2 rounded-sm bg-foreground text-background font-bold shrink-0">
                                 {user.subscriptionPlan}
                               </span>
                             )}
                           </div>
-                          <span className="font-mono text-[10px] text-muted-foreground truncate">
+                          <span className="text-[11px] text-muted-foreground truncate mt-0.5">
                             {user?.email ?? ""}
                           </span>
                         </div>
-                        <ChevronUp className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                        <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                       </>
                     )}
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent
                 side="top"
                 align="end"
-                className="w-52 rounded-none border border-border shadow-xl p-1"
+                className="w-56 rounded-lg border border-border shadow-xl p-1 bg-popover text-popover-foreground space-y-0.5 font-sans"
               >
+                {/* Account Details Header */}
+                <div className="px-2.5 py-2 border-b border-border/70 mb-1 select-none">
+                  <p className="text-xs font-semibold text-foreground truncate">
+                    {user?.fullName ?? "User"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    {user?.email ?? ""}
+                  </p>
+                </div>
+
+                {/* Profile link */}
+                <DropdownMenuItem
+                  asChild
+                  className="rounded-md cursor-pointer text-xs font-medium py-2 hover:bg-muted/60 transition-colors"
+                >
+                  <Link href="/profile" className="flex items-center gap-2.5 w-full">
+                    <User size={14} className="text-muted-foreground" />
+                    <span>Master Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                {/* Billing link */}
+                <DropdownMenuItem
+                  asChild
+                  className="rounded-md cursor-pointer text-xs font-medium py-2 hover:bg-muted/60 transition-colors"
+                >
+                  <Link href="/billing" className="flex items-center gap-2.5 w-full">
+                    <CreditCard size={14} className="text-muted-foreground" />
+                    <span>Billing & Subscription</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                {/* Theme Toggle */}
+                <div className="flex items-center justify-between px-2.5 py-2 border-t border-border/60 text-xs">
+                  <span className="text-muted-foreground text-[11px] font-medium">Theme</span>
+                  <ModeToggle />
+                </div>
+
+                {/* Sign Out */}
                 <DropdownMenuItem
                   onClick={handleLogout}
-                  className="flex items-center gap-2 text-destructive hover:bg-destructive/10 cursor-pointer rounded-none font-medium text-xs py-2"
+                  className="flex items-center gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive cursor-pointer rounded-md font-medium text-xs py-2 border-t border-border/60"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
-                  Sign out
+                  <LogOut size={14} />
+                  <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      <SidebarRail />
     </Sidebar>
   );
 }

@@ -22,45 +22,50 @@ export const RATE_LIMIT_BYPASS_EMAILS = [
 export const RATE_LIMIT_CONFIG = {
   // ── Security — per-IP, identical across all plans ──────────────────────────
   auth: {
-    free:  { max: 5,   window: "1 m"  },
-    pro:   { max: 5,   window: "1 m"  },
-    elite: { max: 5,   window: "1 m"  },
+    free:  { max: 999999, window: "1 m"  },
+    pro:   { max: 999999, window: "1 m"  },
+    elite: { max: 999999, window: "1 m"  },
   },
   oauth: {
-    free:  { max: 10,  window: "15 m" },
-    pro:   { max: 10,  window: "15 m" },
-    elite: { max: 10,  window: "15 m" },
+    free:  { max: 999999, window: "15 m" },
+    pro:   { max: 999999, window: "15 m" },
+    elite: { max: 999999, window: "15 m" },
   },
 
   // ── Cost control — per-user, tiered by subscription plan ───────────────────
   resumeCreate: {
-    free:  { max: 2,   window: "24 h" },
-    pro:   { max: 10,  window: "24 h" },
-    elite: { max: 100, window: "24 h" },
+    free:  { max: 999999, window: "24 h" },
+    pro:   { max: 999999, window: "24 h" },
+    elite: { max: 999999, window: "24 h" },
   },
   oneClickApply: {
-    free:  { max: 1,   window: "72 h" },
-    pro:   { max: 5,   window: "24 h" },
-    elite: { max: 100, window: "24 h" },
+    free:  { max: 999999, window: "72 h" },
+    pro:   { max: 999999, window: "24 h" },
+    elite: { max: 999999, window: "24 h" },
   },
   autopilotRun: {
-    free:  { max: 0,   window: "24 h" },  // Blocked for free tier
-    pro:   { max: 2,   window: "24 h" },
-    elite: { max: 10,  window: "24 h" },
+    free:  { max: 999999, window: "24 h" },  // Unblocked for demo / hackathon
+    pro:   { max: 999999, window: "24 h" },
+    elite: { max: 999999, window: "24 h" },
+  },
+  careerGuideChat: {
+    free:  { max: 999999, window: "24 h" },
+    pro:   { max: 999999, window: "24 h" },
+    elite: { max: 999999, window: "24 h" },
   },
 
   // ── Spam prevention — per-user, same across all plans ──────────────────────
   profileUpdate: {
-    free:  { max: 10,  window: "1 h"  },
-    pro:   { max: 10,  window: "1 h"  },
-    elite: { max: 10,  window: "1 h"  },
+    free:  { max: 999999, window: "1 h"  },
+    pro:   { max: 999999, window: "1 h"  },
+    elite: { max: 999999, window: "1 h"  },
   },
 
   // ── DDoS safety net — per-IP, global ───────────────────────────────────────
   globalApi: {
-    free:  { max: 120, window: "1 m"  },
-    pro:   { max: 120, window: "1 m"  },
-    elite: { max: 120, window: "1 m"  },
+    free:  { max: 999999, window: "1 m"  },
+    pro:   { max: 999999, window: "1 m"  },
+    elite: { max: 999999, window: "1 m"  },
   },
 };
 

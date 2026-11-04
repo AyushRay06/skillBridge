@@ -10,6 +10,7 @@ import {
   triggerRunDirect,
   getDiscoveredJobs,
   deleteDiscoveredJob,
+  saveJob,
 } from "../controller/autopilot.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import { createRateLimiter } from "../middleware/rateLimiter.js";
@@ -35,6 +36,7 @@ router.post("/schedules/:id/run-now", createRateLimiter("autopilotRun"), trigger
 
 // ── Discovered jobs feed (across all schedules) ───────────────────────────────
 router.get("/jobs", getDiscoveredJobs);
+router.post("/jobs/save", saveJob);
 router.delete("/jobs/:id", deleteDiscoveredJob);
 
 export default router;

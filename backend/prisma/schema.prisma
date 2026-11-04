@@ -36,6 +36,9 @@ model User {
   applications Application[]
   schedules    JobSchedule[]
   payments     Payment[]
+  cgConversations CGConversation[]
+  cgResumeProfile CGResumeProfile?
+  cgRoadmaps      CGRoadmap[]
   
   @@map("users")
 }
@@ -222,4 +225,98 @@ model Payment {
   updatedAt      DateTime  @updatedAt
 
   @@map("payments")
+}
+
+
+// ====================== Career Guide (CG prefix) ======================
+
+model CGConversation {
+  id        String       @id @default(cuid())
+  title     String       @default("New Conversation")
+  language  String       @default("auto") // "auto" | "en" | "as" | "hi"
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  CGMessage[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  @@map("cg_conversations")
+}
+
+model CGMessage {
+  id             String          @id @default(cuid())
+  role           String          // "user" | "assistant"
+  content        String          @db.Text
+  cardPayload    Json?           // Typed structured card payload e.g. { type: "roadmap", data: {...} }
+  conversationId String
+  conversation   CGConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime        @default(now())
+  @@map("cg_messages")
+}
+
+model CGResumeProfile {
+  id             String   @id @default(cuid())
+  fullName       String?
+  email          String?
+  phone          String?
+  skills         Json     @default("[]")  // string[]
+  experience     Json     @default("[]")  // { title, company, duration, description }[]
+  education      Json     @default("[]")  // { degree, institution, year }[]
+  projects       Json     @default("[]")  // { name, tech, description }[]
+  achievements   Json     @default("[]")  // string[]
+  rawText        String?  @db.Text        // original text (do NOT log full content)
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@map("cg_resume_profiles")
+}
+
+model CGRoadmap {
+  id              String          @id @default(cuid())
+  title           String
+  targetRole      String?
+  targetSkill     String?
+  estimatedWeeks  Int?
+  language        String          @default("en")
+  steps           CGRoadmapStep[]
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  @@map("cg_roadmaps")
+}
+
+model CGRoadmapStep {
+  id           String    @id @default(cuid())
+  stepNumber   Int
+  title        String
+  whatToLearn  String    @db.Text
+  whyItMatters String    @db.Text
+  resources    Json      @default("[]")  // { label, url }[]
+  estimatedDays Int?
+  status       String    @default("not_started") // "not_started" | "in_progress" | "done"
+  roadmapId    String
+  roadmap      CGRoadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  @@map("cg_roadmap_steps")
+}
+
+model CGRole {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  nameAssamese String?
+  nameHindi    String?
+  description  String
+  category     String        // "tech" | "govt" | "finance" | "creative" | "management"
+  skills       CGRoleSkill[]
+  @@map("cg_roles")
+}
+
+model CGRoleSkill {
+  id       String  @id @default(cuid())
+  skill    String  // canonical skill name (normalised)
+  weight   Float   @default(0.5)  // 0.0 to 1.0, higher = more important
+  required Boolean @default(false)
+  roleId   String
+  role     CGRole  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  @@map("cg_role_skills")
 }

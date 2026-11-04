@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
 import { CadCrosshair, StraightLinePattern } from "./CadAccents";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 /**
  * CadGridFrame
@@ -163,6 +164,7 @@ const companyLogos = [
 ];
 
 export default function TestimonialSection() {
+  const { t } = useLandingLanguage();
   return (
     <section
       id="testimonials"
@@ -176,7 +178,7 @@ export default function TestimonialSection() {
             ///
           </span>
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-            TESTIMONIALS
+            {t.testimonials.sectionTag}
           </span>
           <StraightLinePattern direction="horizontal" size="w-8 h-3 hidden sm:block opacity-60 ml-2" />
         </div>
@@ -184,10 +186,10 @@ export default function TestimonialSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground max-w-3xl">
-              Trusted by the pioneers
+              {t.testimonials.heading}
             </h2>
             <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-              From software engineers and marketers to account executives landing their next role.
+              {t.testimonials.subheading}
             </p>
           </div>
 

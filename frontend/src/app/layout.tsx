@@ -10,28 +10,33 @@ import { AuthProvider } from "@/contexts/AuthContext";
 const fontSans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
 });
 
 const fontSerif = Source_Serif_4({
   subsets: ["latin"],
   variable: "--font-serif",
+  display: "swap",
 });
 
 const fontMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
 });
 
 const chakraPetch = Chakra_Petch({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-chakra",
+  display: "swap",
 });
 
 const rajdhani = Rajdhani({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-rajdhani",
+  display: "swap",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://careercrew.ai";

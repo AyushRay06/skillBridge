@@ -4,8 +4,10 @@ import React from "react";
 import Link from "next/link";
 import { ChevronRight, ArrowDown } from "lucide-react";
 import CadHeroSchematic from "@/components/CadHeroSchematic";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 export default function HeroSection() {
+  const { t } = useLandingLanguage();
   return (
     <div className="relative w-full bg-background text-foreground overflow-hidden">
       {/* Subtle CAD Engineering Grid (Airy & Non-Intrusive) */}
@@ -34,7 +36,7 @@ export default function HeroSection() {
                 ///
               </span>
               <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-                6-AGENT AUTONOMOUS SYSTEM
+                {t.hero.categoryTag}
               </span>
             </div>
 
@@ -44,14 +46,14 @@ export default function HeroSection() {
               <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
                 <span className="text-lg sm:text-2xl md:text-2xl lg:text-3xl font-medium text-muted-foreground/60 tracking-tight flex items-center gap-2.5 sm:gap-3">
                   <span className="inline-block w-4 sm:w-6 h-[1px] bg-muted-foreground/40" />
-                  <span>Stop applying manually.</span>
+                  <span>{t.hero.step1}</span>
                 </span>
                 <span className="hidden sm:inline-block h-[1px] flex-1 bg-border/50 max-w-[120px]" />
               </div>
 
               {/* Step 2: The Core Imperative (Bold, Pure White Contrast) */}
               <span className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] xl:text-[4.85rem] font-bold tracking-tight text-foreground leading-[1.02]">
-                Deploy your career
+                {t.hero.step2}
               </span>
 
               {/* Step 3: The Superpower (CAD Straight-Line Architectural Framing) */}
@@ -79,14 +81,14 @@ export default function HeroSection() {
                     }}
                   />
 
-                  <span>ON AUTOPILOT.</span>
+                  <span>{t.hero.step3Badge}</span>
                 </span>
               </div>
             </h1>
 
             {/* Clean Subtitle with Open Line Height */}
             <p className="mt-6 sm:mt-8 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
-              Autonomous multi-agent infrastructure that discovers verified roles, compiles ATS-tailored LaTeX resumes, and submits applications on your cadence.
+              {t.hero.description}
             </p>
 
             {/* Action Buttons Row: Focused & Uncluttered */}
@@ -100,7 +102,7 @@ export default function HeroSection() {
                   <ChevronRight className="h-4 w-4 text-background transition-transform group-hover:translate-x-0.5" />
                 </div>
                 <div className="flex items-center px-6 sm:px-7 py-4">
-                  Start Autopilot Free
+                  {t.hero.primaryCta}
                 </div>
               </Link>
 
@@ -109,7 +111,7 @@ export default function HeroSection() {
                 href="/#pipeline"
                 className="inline-flex items-center gap-2.5 border border-border/80 bg-background px-6 sm:px-7 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-foreground hover:bg-muted/40 transition-colors"
               >
-                <span>Explore Pipeline</span>
+                <span>{t.hero.secondaryCta}</span>
                 <ArrowDown className="h-3.5 w-3.5 text-muted-foreground" />
               </Link>
             </div>

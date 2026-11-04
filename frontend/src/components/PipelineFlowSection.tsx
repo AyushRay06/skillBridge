@@ -10,8 +10,10 @@ import {
   Sparkles,
 } from "lucide-react";
 import { HatchedBlock, CadCrosshair, CrisscrossBox, StraightLinePattern } from "./CadAccents";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 export default function PipelineFlowSection() {
+  const { t } = useLandingLanguage();
   // 4 Execution Stages:
   // 0 = Agent 01 active
   // 1 = Agent 02 active
@@ -39,7 +41,7 @@ export default function PipelineFlowSection() {
             ///
           </span>
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-            PIPELINE ARCHITECTURE
+            {t.pipeline.sectionTag}
           </span>
           <HatchedBlock className="hidden sm:block opacity-60 ml-1" />
           <StraightLinePattern direction="horizontal" size="w-8 h-3 hidden sm:block opacity-60" />
@@ -48,10 +50,10 @@ export default function PipelineFlowSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-              6-agent autonomous pipeline
+              {t.pipeline.heading}
             </h2>
             <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl">
-              From role discovery to scoring, parallel asset synthesis, and automated application.
+              {t.pipeline.subheading}
             </p>
           </div>
 
@@ -98,11 +100,11 @@ export default function PipelineFlowSection() {
                 >
                   <Search className="h-3.5 w-3.5" />
                 </div>
-                <h3 className="text-sm sm:text-base font-bold leading-tight">Job Search</h3>
+                <h3 className="text-sm sm:text-base font-bold leading-tight">{t.pipeline.agents.a1.name}</h3>
               </div>
 
               <p className="border-t border-current/20 pt-2 text-[11px] sm:text-xs leading-relaxed opacity-85">
-                Search for relevant jobs according to users&apos; profiles and target criteria.
+                {t.pipeline.agents.a1.desc}
               </p>
             </div>
           </div>
@@ -167,11 +169,11 @@ export default function PipelineFlowSection() {
                 >
                   <SlidersHorizontal className="h-3.5 w-3.5" />
                 </div>
-                <h3 className="text-sm sm:text-base font-bold leading-tight">Fit &amp; Scoring</h3>
+                <h3 className="text-sm sm:text-base font-bold leading-tight">{t.pipeline.agents.a2.name}</h3>
               </div>
 
               <p className="border-t border-current/20 pt-2 text-[11px] sm:text-xs leading-relaxed opacity-85">
-                Score each searched job against your profile and rank them by fit score.
+                {t.pipeline.agents.a2.desc}
               </p>
             </div>
           </div>
@@ -252,10 +254,10 @@ export default function PipelineFlowSection() {
               </div>
               <div className="flex items-center gap-2">
                 <FileText className="h-3.5 w-3.5 shrink-0" />
-                <h4 className="text-xs sm:text-sm font-bold leading-tight truncate">ATS Resume</h4>
+                <h4 className="text-xs sm:text-sm font-bold leading-tight truncate">{t.pipeline.agents.a3.name}</h4>
               </div>
               <p className="border-t border-current/20 pt-1 text-[10.5px] leading-snug opacity-85">
-                Generate a resume from a JD, 100% in LaTeX.
+                {t.pipeline.agents.a3.desc}
               </p>
             </div>
 
@@ -274,10 +276,10 @@ export default function PipelineFlowSection() {
               </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                <h4 className="text-xs sm:text-sm font-bold leading-tight truncate">Cover Letter</h4>
+                <h4 className="text-xs sm:text-sm font-bold leading-tight truncate">{t.pipeline.agents.a4.name}</h4>
               </div>
               <p className="border-t border-current/20 pt-1 text-[10.5px] leading-snug opacity-85">
-                Generate a cover letter according to the company.
+                {t.pipeline.agents.a4.desc}
               </p>
             </div>
 
@@ -296,10 +298,10 @@ export default function PipelineFlowSection() {
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-3.5 w-3.5 shrink-0" />
-                <h4 className="text-xs sm:text-sm font-bold leading-tight truncate">Recruiter Email</h4>
+                <h4 className="text-xs sm:text-sm font-bold leading-tight truncate">{t.pipeline.agents.a5.name}</h4>
               </div>
               <p className="border-t border-current/20 pt-1 text-[10.5px] leading-snug opacity-85">
-                Write a personalized email for outreach.
+                {t.pipeline.agents.a5.desc}
               </p>
             </div>
           </div>
@@ -406,11 +408,11 @@ export default function PipelineFlowSection() {
                 >
                   <Send className="h-3.5 w-3.5" />
                 </div>
-                <h3 className="text-sm sm:text-base font-bold leading-tight">Autonomous Apply</h3>
+                <h3 className="text-sm sm:text-base font-bold leading-tight">{t.pipeline.agents.a6.name}</h3>
               </div>
 
               <p className="border-t border-current/20 pt-2 text-[11px] sm:text-xs leading-relaxed opacity-85">
-                Apply automatically.
+                {t.pipeline.agents.a6.desc}
               </p>
             </div>
           </div>

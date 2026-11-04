@@ -14,7 +14,7 @@ import {
   Code2,
   RefreshCw,
   Terminal,
-} from "lucide-react";
+} from "@/components/animate-ui/icons";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

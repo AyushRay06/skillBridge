@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { CadCrosshair } from "./CadAccents";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 interface FaqItem {
   id: string;
@@ -11,53 +12,16 @@ interface FaqItem {
   answer: string;
 }
 
-const faqs: FaqItem[] = [
-  {
-    id: "f1",
-    index: "01",
-    question: "What is CareerCrew AI?",
-    answer:
-      "CareerCrew is an autonomous multi-agent AI platform that searches job openings, scores match fit, and compiles ATS-optimized LaTeX resumes, cover letters, and outreach emails for candidates.",
-  },
-  {
-    id: "f2",
-    index: "02",
-    question: "How does CareerCrew ensure resumes pass ATS filters?",
-    answer:
-      "Our parser validates resumes against parsing schemas for Greenhouse, Lever, and Workday, ensuring accurate keyword parity, standard section hierarchy, and clean typographic structure.",
-  },
-  {
-    id: "f3",
-    index: "03",
-    question: "Can I export pure LaTeX and Vector PDF files?",
-    answer:
-      "Yes. Resumes can be previewed in your browser and exported in both lightweight Vector PDF and compile-ready LaTeX (.tex) format.",
-  },
-  {
-    id: "f4",
-    index: "04",
-    question: "How does the autonomous crawler and job match work?",
-    answer:
-      "Agent 01 indexes openings across Greenhouse, Lever, and LinkedIn 24/7. Agent 02 performs cosine match scoring, advancing only openings that match your target profile.",
-  },
-  {
-    id: "f5",
-    index: "05",
-    question: "Do I have control before an application is submitted?",
-    answer:
-      "Yes. You can choose Semi-Autonomous mode (requires your 1-click confirmation before submission) or Full Autopilot mode (auto-submits directly to the application queue).",
-  },
-  {
-    id: "f6",
-    index: "06",
-    question: "Is my personal data encrypted and secure?",
-    answer:
-      "All candidate data is encrypted with AES-256. We never sell your personal information or use your private resumes to train public AI models.",
-  },
-];
-
 export default function FaqSection() {
+  const { t } = useLandingLanguage();
   const [expandedId, setExpandedId] = useState<string | null>("f1");
+
+  const faqs: FaqItem[] = (t.faq?.items || []).map((item, idx) => ({
+    id: `f${idx + 1}`,
+    index: String(idx + 1).padStart(2, "0"),
+    question: item.q,
+    answer: item.a,
+  }));
 
   const toggleAccordion = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -76,22 +40,22 @@ export default function FaqSection() {
             ///
           </span>
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-            FAQ
+            {t.faq.sectionTag}
           </span>
         </div>
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-              Frequently asked questions
+              {t.faq.heading}
             </h2>
             <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl">
-              Quick answers about CareerCrew AI, resume exports, and autonomous job applications.
+              {t.faq.subheading}
             </p>
           </div>
 
           <div className="font-mono text-xs text-muted-foreground border border-border/80 px-4 py-2 bg-muted/20 self-start md:self-auto">
-            INQUIRIES: <strong className="text-foreground">6 QUESTIONS</strong>
+            INQUIRIES: <strong className="text-foreground">{faqs.length} QUESTIONS</strong>
           </div>
         </div>
       </div>

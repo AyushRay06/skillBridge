@@ -3,13 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, ArrowRight } from "@/components/animate-ui/icons";
 import { axiosAPI } from "@/lib/axiosInterface";
 import toast from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { OAuthButtons } from "@/components/OAuthButtons";
 import { CadCrosshair } from "@/components/CadAccents";
 import GrainOverlay from "@/components/GrainOverlay";
+import { ModeToggle } from "@/components/theme-toggle";
+import { PandaLogo } from "@/components/PandaLogo";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -85,17 +87,21 @@ export default function SignupPage() {
       <div className="relative z-10 w-full max-w-[440px] flex justify-between items-center mb-6">
         <Link
           href="/"
-          className="inline-flex items-center group focus:outline-none shrink-0"
-          aria-label="Carrier Crew AI Home"
+          className="inline-flex items-center gap-2.5 sm:gap-3 group focus:outline-none shrink-0"
+          aria-label="CareerCrew AI Home"
         >
+          <PandaLogo className="w-8 h-8 transition-transform group-hover:scale-105" />
           <span className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-foreground select-none leading-none group-hover:opacity-85 transition-opacity">
             CareerCrewAI
           </span>
         </Link>
 
-        <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
-          /// 02
-        </span>
+        <div className="flex items-center gap-3">
+          <ModeToggle />
+          <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
+            /// 02
+          </span>
+        </div>
       </div>
 
       {/* Center CAD Registration Terminal Box */}

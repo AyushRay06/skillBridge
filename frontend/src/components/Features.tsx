@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Bot, FileText, Clock, FileCheck, Mail, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { HatchedBlock, CadCrosshair, StraightLinePattern, CadStraightLineBorder } from "./CadAccents";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 /**
  * CadPipelineSchematic
@@ -384,6 +385,7 @@ function CadMicroSchematic({ type }: { type: number }) {
 }
 
 export default function Features() {
+  const { t } = useLandingLanguage();
   const [hoveredMain, setHoveredMain] = useState<string | null>(null);
   const [hoveredMicro, setHoveredMicro] = useState<string | null>(null);
 
@@ -392,28 +394,28 @@ export default function Features() {
       id: "pipeline",
       tag: "01 // PIPELINE",
       icon: Bot,
-      title: "End-to-End Application Pipeline",
-      desc: "Searches for verified job openings matching your profile, evaluates match fit, and automatically submits applications on your behalf.",
+      title: t.features.f1.title,
+      desc: t.features.f1.desc,
       spec: "SEARCH → FIT SCORE → AUTO-APPLY",
-      cta: { label: "Deploy Pipeline", href: "/autopilot" },
+      cta: { label: t.features.f1.cta, href: "/autopilot" },
     },
     {
       id: "atomic-resume",
       tag: "02 // ATOMIC SYNTHESIS",
       icon: FileText,
-      title: "Instant JD Resume Generator",
-      desc: "Paste any job description to instantly compile a tailored, ATS-friendly LaTeX resume aligned with the role's exact keywords.",
+      title: t.features.f2.title,
+      desc: t.features.f2.desc,
       spec: "PASTE JOB DESCRIPTION → LATEX PDF",
-      cta: { label: "Generate Resume", href: "/apply" },
+      cta: { label: t.features.f2.cta, href: "/apply" },
     },
     {
       id: "scheduling",
       tag: "03 // SCHEDULING",
       icon: Clock,
-      title: "Scheduled Agent Automation",
-      desc: "Create autonomous agents and schedule background tasks to continuously discover openings and dispatch applications on your cadence.",
+      title: t.features.f3.title,
+      desc: t.features.f3.desc,
       spec: "CREATE AGENTS → SCHEDULE CADENCE",
-      cta: { label: "Schedule Tasks", href: "/dashboard" },
+      cta: { label: t.features.f3.cta, href: "/dashboard" },
     },
   ];
 
@@ -451,7 +453,7 @@ export default function Features() {
             ///
           </span>
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-            CORE PLATFORM
+            {t.features.sectionTag}
           </span>
           <HatchedBlock className="hidden sm:block opacity-60 ml-1" />
           <StraightLinePattern direction="horizontal" size="w-8 h-3 hidden sm:block opacity-60" />
@@ -460,10 +462,10 @@ export default function Features() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-              The ultimate career platform
+              {t.features.heading}
             </h2>
             <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
-              Autonomous multi-agent infrastructure designed to search, tailor, and apply on autopilot.
+              {t.features.subheading}
             </p>
           </div>
 

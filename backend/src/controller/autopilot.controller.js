@@ -383,6 +383,7 @@ export const getDiscoveredJobs = async (req, res) => {
 
     const where = {
       schedule: { userId },
+      source: { not: "chat_saved" }, // Exclude chat saved jobs so autopilot search feed remains strictly automated jobs
       ...(scheduleId && { scheduleId }),
       ...(status && { status }),
     };
@@ -455,5 +456,81 @@ export const deleteDiscoveredJob = async (req, res) => {
   } catch (error) {
     console.error("Error in deleteDiscoveredJob:", error);
     return res.status(500).json({ msg: "Internal server error." });
+  }
+};
+
+// ─────────────────────────────────────────────
+// SAVE a discovered / career guide job directly
+// ─────────────────────────────────────────────
+export const saveJob = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { title, company, location, salary, url, source, description, matchScore } = req.body;
+
+    if (!title || !company) {
+      return res.status(400).json({ msg: "Job title and company are required." });
+    }
+
+    // Find or create a schedule for saved jobs
+    let schedule = await prisma.jobSchedule.findFirst({
+      where: { userId, name: "Saved Jobs" },
+    });
+
+    if (!schedule) {
+      schedule = await prisma.jobSchedule.create({
+        data: {
+          userId,
+          name: "Saved Jobs",
+          targetRoles: [title],
+          locations: ["Remote", "Various"],
+          workType: "any",
+          experienceLevel: "any",
+          postAge: "7d",
+          cronExpression: "0 0 1 1 *",
+          isActive: false,
+        },
+      });
+    }
+
+    // Check if job already saved for this user
+    const existing = await prisma.discoveredJob.findFirst({
+      where: {
+        schedule: { userId },
+        source: "chat_saved",
+        ...(url ? { url } : { title, company }),
+      },
+    });
+
+    if (existing) {
+      return res.status(200).json({
+        msg: "Job already saved in your Saved Jobs.",
+        job: existing,
+        alreadySaved: true,
+      });
+    }
+
+    const job = await prisma.discoveredJob.create({
+      data: {
+        scheduleId: schedule.id,
+        title,
+        company,
+        location: location || "Remote / Various",
+        salary: salary || null,
+        url: url || null,
+        source: "chat_saved",
+        description: description || `${title} at ${company}. Saved from Career Guide.`,
+        matchScore: matchScore || 95,
+        status: "saved_from_chat",
+      },
+    });
+
+    return res.status(201).json({
+      msg: "Job saved successfully to Saved Jobs.",
+      job,
+      alreadySaved: false,
+    });
+  } catch (error) {
+    console.error("Error in saveJob:", error);
+    return res.status(500).json({ msg: "Failed to save job." });
   }
 };

@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev",
+    "dev:turbo": "NODE_OPTIONS='--max-old-space-size=4096' next dev --turbopack",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@animate-ui/react": "^2.4.2",
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
     "@radix-ui/react-dropdown-menu": "^2.1.16",

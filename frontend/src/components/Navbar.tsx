@@ -5,19 +5,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { ChevronRight, Menu, X } from "lucide-react";
+import { ModeToggle } from "@/components/theme-toggle";
+import { PandaLogo } from "@/components/PandaLogo";
+import { LandingLanguageToggle } from "@/components/LandingLanguageToggle";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 export default function Navbar() {
   const router = useRouter();
   const { isAuthenticated, logout } = useAuth();
+  const { t } = useLandingLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: "Pipeline", href: "/#pipeline" },
-    { label: "Telemetry", href: "/#telemetry" },
-    { label: "Platform", href: "/#features" },
-    { label: "Testimonials", href: "/#testimonials" },
-    { label: "Pricing", href: "/#pricing" },
-    { label: "FAQ", href: "/#faq" },
+    { label: t.nav.pipeline, href: "/#pipeline" },
+    { label: t.nav.telemetry, href: "/#telemetry" },
+    { label: t.nav.platform, href: "/#features" },
+    { label: t.nav.testimonials, href: "/#testimonials" },
+    { label: t.nav.pricing, href: "/#pricing" },
+    { label: t.nav.faq, href: "/#faq" },
   ];
 
   return (
@@ -28,9 +33,10 @@ export default function Navbar() {
           {/* Brand Mark using landing page heading typography */}
           <Link
             href="/"
-            className="flex items-center group focus:outline-none shrink-0"
+            className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none shrink-0"
             aria-label="CareerCrewAI Home"
           >
+            <PandaLogo className="w-8 h-8 sm:w-9 sm:h-9 transition-transform group-hover:scale-105" />
             <span className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-foreground select-none leading-none group-hover:opacity-85 transition-opacity">
               CareerCrewAI
             </span>
@@ -54,14 +60,16 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action Cluster */}
-          <div className="hidden sm:flex items-center gap-8 shrink-0">
+          <div className="hidden sm:flex items-center gap-4 xl:gap-6 shrink-0">
+            <LandingLanguageToggle />
+            <ModeToggle />
             {isAuthenticated ? (
               <div className="flex items-center gap-6">
                 <Link
                   href="/dashboard"
                   className="font-mono text-xs uppercase tracking-wider font-semibold text-foreground hover:text-foreground/80 transition-colors"
                 >
-                  Dashboard
+                  {t.nav.dashboard}
                 </Link>
                 <button
                   onClick={() => {
@@ -70,16 +78,16 @@ export default function Navbar() {
                   }}
                   className="font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
-                  Log Out
+                  {t.nav.logout}
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-8">
+              <div className="flex items-center gap-6">
                 <Link
                   href="/login"
                   className="font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Log In
+                  {t.nav.login}
                 </Link>
 
                 {/* Sharp Split Button */}
@@ -91,15 +99,16 @@ export default function Navbar() {
                     <ChevronRight className="h-3.5 w-3.5 text-background transition-transform group-hover:translate-x-0.5" />
                   </div>
                   <div className="flex items-center px-5 py-2.5">
-                    Get Started
+                    {t.nav.getStarted}
                   </div>
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Mobile Menu Trigger */}
-          <div className="flex lg:hidden items-center">
+          {/* Mobile Menu Trigger & Theme Toggle */}
+          <div className="flex lg:hidden items-center gap-2">
+            <ModeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Menu"
@@ -114,6 +123,10 @@ export default function Navbar() {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-border bg-background px-8 py-8 space-y-5 font-mono text-xs uppercase tracking-wider">
+          <div className="flex items-center justify-between pb-3 border-b border-border/40">
+            <span className="text-[10px] text-muted-foreground">Language / ভাষা</span>
+            <LandingLanguageToggle />
+          </div>
           {navLinks.map((link) => (
             <Link
               key={link.label}
@@ -131,7 +144,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full py-3 text-center bg-foreground text-background font-semibold"
               >
-                Go to Dashboard
+                {t.nav.dashboard}
               </Link>
             ) : (
               <>
@@ -140,14 +153,14 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-3 text-center border border-border text-foreground"
                 >
-                  Log In
+                  {t.nav.login}
                 </Link>
                 <Link
                   href="/signup"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-3 text-center bg-foreground text-background font-semibold"
                 >
-                  Get Started
+                  {t.nav.getStarted}
                 </Link>
               </>
             )}

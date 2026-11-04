@@ -1,17 +1,15 @@
 "use client";
 
 import React from "react";
-
-const tickerItems = [
-  { tag: "AGENT 01", text: "Search for relevant jobs according to users' profiles and target criteria" },
-  { tag: "AGENT 02", text: "Score each searched job and rank them by fit score" },
-  { tag: "AGENT 03", text: "Generate a resume from a JD, 100% in LaTeX" },
-  { tag: "AGENT 04", text: "Generate a cover letter according to the company" },
-  { tag: "AGENT 05", text: "Write a personalized email for outreach" },
-  { tag: "AGENT 06", text: "Apply automatically" },
-];
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 export default function LiveMarqueeTicker() {
+  const { t } = useLandingLanguage();
+  const items = (t.ticker?.events || []).map((evt, idx) => ({
+    tag: `AGENT 0${idx + 1}`,
+    text: evt,
+  }));
+
   return (
     <div
       aria-label="Live System Telemetry Marquee"
@@ -19,7 +17,7 @@ export default function LiveMarqueeTicker() {
     >
       <div className="flex w-max animate-[marquee_35s_linear_infinite] hover:[animation-play-state:paused]">
         {/* Render twice for continuous loop */}
-        {[...tickerItems, ...tickerItems].map((item, idx) => (
+        {[...items, ...items].map((item, idx) => (
           <div
             key={idx}
             className="flex items-center gap-3 px-6 font-mono text-[11px] text-muted-foreground whitespace-nowrap"

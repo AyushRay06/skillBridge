@@ -32,6 +32,7 @@ import {
   StraightLinePattern,
   HatchedBlock,
 } from "./CadAccents";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 /* =========================================================================
    1. MULTIPLE BAR CHART: Manual Application vs. CareerCrew Velocity (Minutes)
@@ -424,6 +425,7 @@ function ApplicationVolumeLineChartComponent() {
    MAIN COMPONENT: Spacious, Unsqueezed Bento Dashboard
    ========================================================================= */
 export default function TelemetryStatsSection() {
+  const { t } = useLandingLanguage();
   return (
     <section
       id="telemetry"
@@ -437,7 +439,7 @@ export default function TelemetryStatsSection() {
             ///
           </span>
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-            PROCESS TRANSFORMATION
+            {t.telemetry.sectionTag}
           </span>
           <StraightLinePattern direction="horizontal" size="w-8 h-3 hidden sm:block opacity-60 ml-2" />
         </div>
@@ -445,17 +447,17 @@ export default function TelemetryStatsSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-              Manual grind vs. autonomous velocity
+              {t.telemetry.heading}
             </h2>
             <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
-              Applying to 5 jobs manually used to take an entire 10-hour workday. With CareerCrew, discover, score, tailor, and dispatch in under 2 minutes.
+              {t.telemetry.subheading}
             </p>
           </div>
 
           <div className="flex items-center gap-3 self-start md:self-auto">
             <CrisscrossBox size="w-8 h-8 hidden sm:block" />
             <div className="font-mono text-xs text-muted-foreground border border-border/80 px-4 py-2 bg-muted/20">
-              BENCHMARK: <strong className="text-foreground">300x EFFICIENCY</strong>
+              BENCHMARK: <strong className="text-foreground">{t.telemetry.chart1.callout}</strong>
             </div>
           </div>
         </div>

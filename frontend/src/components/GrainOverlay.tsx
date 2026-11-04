@@ -42,7 +42,7 @@ export default function GrainOverlay() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-40 h-full w-full select-none"
+      className="pointer-events-none fixed inset-0 z-40 h-full w-full select-none dark:hidden"
       style={{
         backgroundImage: `url(${patternUrl})`,
         backgroundRepeat: "repeat",

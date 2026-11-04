@@ -30,7 +30,7 @@ import {
   Zap,
   FileText,
   Terminal,
-} from "lucide-react";
+} from "@/components/animate-ui/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FullPageSkeleton, ScheduleGridSkeleton, JobFeedSkeleton } from "@/components/skeletons";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

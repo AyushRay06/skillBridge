@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { axiosAPI } from "@/lib/axiosInterface";
-import { Trash2, FileText, Calendar, Plus, X, Copy, Check, ArrowRight, Sparkles, AlertCircle } from "lucide-react";
+import { Trash2, FileText, Calendar, Plus, X, Copy, Check, ArrowRight, Sparkles, AlertCircle } from "@/components/animate-ui/icons";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { DashboardResumeSkeleton } from "@/components/skeletons";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -112,6 +113,19 @@ export default function SavedResumesPage() {
     });
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 14 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
+  };
+
   return (
     <div className="w-full min-h-screen px-6 sm:px-8 lg:px-10 py-8 space-y-6">
       {loading ? (
@@ -119,9 +133,14 @@ export default function SavedResumesPage() {
           <DashboardResumeSkeleton />
         </div>
       ) : (
-        <div className="space-y-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-6"
+        >
           {/* Header Bar with CAD Framing */}
-          <div className="relative border border-border bg-card p-5 sm:p-6 rounded-none">
+          <div className="relative border border-border bg-card/80 backdrop-blur-xs p-5 sm:p-6 rounded-none shadow-xs">
             <span className="absolute -top-1.5 -left-1.5 font-mono text-[10px] text-foreground/40 font-bold select-none">+</span>
             <span className="absolute -top-1.5 -right-1.5 font-mono text-[10px] text-foreground/40 font-bold select-none">+</span>
             <span className="absolute -bottom-1.5 -left-1.5 font-mono text-[10px] text-foreground/40 font-bold select-none">+</span>
@@ -129,20 +148,25 @@ export default function SavedResumesPage() {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-foreground tracking-tight">
-                  Saved Resumes
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold text-foreground tracking-tight">
+                    Saved Resumes
+                  </h1>
+                  <span className="font-mono text-[11px] px-2 py-0.5 rounded-none border border-violet-500/30 bg-violet-500/10 text-violet-600 dark:text-violet-400 font-semibold">
+                    {resumes.length} {resumes.length === 1 ? "FILE" : "FILES"}
+                  </span>
+                </div>
                 <p className="text-muted-foreground text-xs">
-                  All your created resumes and LaTeX files.
+                  All your tailored resumes and compiled LaTeX source documents.
                 </p>
               </div>
               
               <div className="flex items-center gap-2.5">
                 <button
                   onClick={() => router.push("/resume")}
-                  className="px-3.5 py-1.5 bg-foreground text-background font-mono text-xs uppercase tracking-wider hover:bg-foreground/90 transition-colors cursor-pointer select-none flex items-center gap-1.5 rounded-none font-semibold"
+                  className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-mono text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer select-none flex items-center gap-2 rounded-none font-semibold shadow-sm shadow-violet-500/20 active:scale-95"
                 >
-                  <Plus size={13} />
+                  <Plus size={14} />
                   New Resume
                 </button>
               </div>
@@ -160,14 +184,14 @@ export default function SavedResumesPage() {
 
           {/* Empty State */}
           {resumes.length === 0 && !loading && !error && (
-            <div className="relative border border-border bg-card p-12 text-center max-w-xl mx-auto space-y-4 rounded-none">
+            <div className="relative border border-border bg-card p-12 text-center max-w-xl mx-auto space-y-4 rounded-none shadow-sm">
               <span className="absolute -top-1.5 -left-1.5 font-mono text-[10px] text-foreground/40 font-bold select-none">+</span>
               <span className="absolute -top-1.5 -right-1.5 font-mono text-[10px] text-foreground/40 font-bold select-none">+</span>
               <span className="absolute -bottom-1.5 -left-1.5 font-mono text-[10px] text-foreground/40 font-bold select-none">+</span>
               <span className="absolute -bottom-1.5 -right-1.5 font-mono text-[10px] text-foreground/40 font-bold select-none">+</span>
 
-              <div className="w-10 h-10 border border-border bg-background flex items-center justify-center mx-auto text-muted-foreground">
-                <FileText size={18} />
+              <div className="w-12 h-12 border border-violet-500/30 bg-violet-500/10 flex items-center justify-center mx-auto text-violet-500">
+                <FileText size={20} />
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-foreground">No documents in store</h3>
@@ -177,7 +201,7 @@ export default function SavedResumesPage() {
               </div>
               <button
                 onClick={() => router.push("/resume")}
-                className="px-4 py-2 bg-foreground text-background font-mono text-xs uppercase tracking-wider hover:bg-foreground/90 transition-colors inline-flex items-center gap-2 rounded-none"
+                className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-mono text-xs uppercase tracking-wider transition-all inline-flex items-center gap-2 rounded-none shadow-sm shadow-violet-500/20 active:scale-95"
               >
                 <Plus size={13} />
                 Create First Resume
@@ -186,23 +210,33 @@ export default function SavedResumesPage() {
           )}
 
           {/* Resume Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          >
             {resumes.map((resume) => (
-              <div
+              <motion.div
                 key={resume.id}
+                variants={cardVariants}
+                whileHover={{ y: -3 }}
                 onClick={() => handleView(resume.id)}
-                className="relative border border-border bg-card p-5 cursor-pointer hover:border-foreground/40 transition-colors group flex flex-col justify-between space-y-4 rounded-none"
+                className="relative border border-border bg-card p-5 cursor-pointer hover:border-violet-500/40 hover:shadow-lg hover:shadow-violet-500/5 transition-all duration-200 group flex flex-col justify-between space-y-4 rounded-none overflow-hidden"
               >
+                {/* Top subtle gradient accent line */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500/40 via-indigo-500/40 to-amber-500/40 opacity-70 group-hover:opacity-100 transition-opacity" />
+
                 <div>
                   <div className="flex items-start justify-between mb-3 border-b border-border/60 pb-3">
-                    <div className="w-7 h-7 border border-border bg-background flex items-center justify-center text-muted-foreground group-hover:text-foreground group-hover:border-foreground/40 transition-colors">
-                      <FileText size={13} />
+                    <div className="w-8 h-8 border border-border bg-background flex items-center justify-center text-muted-foreground group-hover:text-violet-500 group-hover:border-violet-500/40 group-hover:bg-violet-500/5 transition-all duration-200">
+                      <FileText size={14} />
                     </div>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <button
                           onClick={(e) => e.stopPropagation()}
-                          className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border border-transparent hover:border-destructive/30 transition-colors rounded-none"
+                          className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border border-transparent hover:border-destructive/30 transition-colors rounded-none cursor-pointer"
                           title="Delete Resume"
                         >
                           <Trash2 size={13} />
@@ -228,33 +262,33 @@ export default function SavedResumesPage() {
                     </AlertDialog>
                   </div>
 
-                  <h3 className="font-semibold text-sm text-foreground line-clamp-1 group-hover:underline transition-colors">
+                  <h3 className="font-semibold text-sm text-foreground line-clamp-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
                     {resume.title || "Untitled Resume"}
                   </h3>
                   <p className="font-mono text-xs text-muted-foreground mt-0.5">{resume.fullName}</p>
                 </div>
 
-                <div className="space-y-1 border-t border-border/60 pt-3 font-mono text-[10px] text-muted-foreground">
+                <div className="space-y-1.5 border-t border-border/60 pt-3 font-mono text-[10px] text-muted-foreground">
                   <div className="flex items-center gap-1.5">
-                    <Calendar size={10} />
+                    <Calendar size={11} className="text-amber-500/70" />
                     <span>Updated: {formatDate(resume.updatedAt)}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Calendar size={10} />
+                    <Calendar size={11} className="text-violet-500/70" />
                     <span>Created: {formatDate(resume.createdAt)}</span>
                   </div>
                 </div>
                 
                 <div className="pt-2.5 flex items-center justify-between border-t border-border/40">
-                  <span className="font-mono text-[10px] uppercase text-muted-foreground group-hover:text-foreground transition-colors">
+                  <span className="font-mono text-[10px] uppercase text-muted-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 font-medium transition-colors">
                     View LaTeX Source
                   </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 group-hover:translate-x-1 transition-all" />
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* LaTeX Code Modal */}

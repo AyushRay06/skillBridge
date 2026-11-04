@@ -8,6 +8,8 @@ import profileRoute from "./routes/profile.route.js";
 import applyRoute from "./routes/apply.route.js";
 import autopilotRoute from "./routes/autopilot.route.js";
 import paymentRoute from "./routes/payment.route.js";
+import careerGuideRoute from "./routes/careerGuide.route.js";
+import whatsappRoute from "./routes/whatsapp.route.js";
 import cookieParser from "cookie-parser";
 import passport, { initializePassport } from "./lib/passport.js";
 import { serve } from "inngest/express";
@@ -31,6 +33,8 @@ app.use(
     },
   })
 );
+// Support URL-encoded form data (required for Twilio webhooks)
+app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
   "https://careercrewai.ayushray.in",
   "https://ayushray.in",
@@ -80,6 +84,8 @@ app.use("/api/profile", profileRoute);
 app.use("/api/apply", applyRoute);
 app.use("/api/autopilot", autopilotRoute);
 app.use("/api/payment", paymentRoute);
+app.use("/api/career-guide", careerGuideRoute);
+app.use("/api/whatsapp", whatsappRoute);
 
 // Inngest serve handler — Inngest cloud calls this endpoint to execute functions
 app.use(
@@ -87,9 +93,9 @@ app.use(
   serve({ client: inngest, functions: inngestFunctions })
 );
 
-// Root route for health check
-app.get("/", (req, res) => {
-  res.json({ message: "API is running" });
+// Root route and health check
+app.get(["/", "/health", "/api/health"], (req, res) => {
+  res.json({ status: "ok", message: "API is running" });
 });
 
 // For Vercel serverless

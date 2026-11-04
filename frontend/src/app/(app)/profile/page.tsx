@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { axiosAPI } from "@/lib/axiosInterface";
 import { useRouter } from "next/navigation";
 import { 
   User, Briefcase, GraduationCap, List, Trophy, Save, 
-  ArrowLeft, Plus, X, Sparkles, CheckCircle2, ChevronRight, FileText, Terminal
-} from "lucide-react";
+  ArrowLeft, Plus, X, Sparkles, CheckCircle2, ChevronRight, FileText, Terminal,
+  Upload, FileUp
+} from "@/components/animate-ui/icons";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { ProfilePageSkeleton } from "@/components/skeletons";
@@ -72,11 +73,17 @@ export default function ProfileBuilder() {
   const [activeTab, setActiveTab] = useState<"personal" | "experience" | "skills" | "achievements">("personal");
   const [newSkill, setNewSkill] = useState("");
   
-  // Resume Import Modal State
+  // Resume Import Modal State (In-App Resumes)
   const [showImportModal, setShowImportModal] = useState(false);
   const [userResumes, setUserResumes] = useState<Array<{ id: string; title: string; createdAt: string }>>([]);
   const [loadingResumes, setLoadingResumes] = useState(false);
   const [importing, setImporting] = useState(false);
+
+  // Resume Upload Modal State (Local Resume File)
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
 
@@ -150,6 +157,47 @@ export default function ProfileBuilder() {
       console.error("Error importing profile:", error);
     } finally {
       setImporting(false);
+    }
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File is too large. Max size is 5MB.");
+      return;
+    }
+
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    const isTxt = file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
+    if (!isPdf && !isTxt) {
+      toast.error("Only PDF (.pdf) and Text (.txt) files are supported.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    try {
+      setIsUploadingFile(true);
+      const res = await axiosAPI.post("/profile/upload-resume", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (res.data.profile) {
+        setProfileData(res.data.profile);
+        toast.success(res.data.msg || "Master profile created from your resume!");
+        setShowUploadModal(false);
+      }
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.msg || "Failed to parse resume and create profile.";
+      toast.error(errorMsg);
+      console.error("Error uploading resume:", err);
+    } finally {
+      setIsUploadingFile(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -311,17 +359,35 @@ export default function ProfileBuilder() {
 
             {/* Actions Bar */}
             <div className="flex flex-wrap items-center gap-2.5 pt-2 md:pt-0 border-t md:border-t-0 border-border">
+              {/* Option 1: Resumes saved in software */}
               <button
                 onClick={handleImportClick}
-                className="px-4 py-2 border border-border hover:border-foreground/40 bg-card hover:bg-muted font-mono text-xs uppercase tracking-wider text-foreground rounded-none transition-colors inline-flex items-center gap-2"
+                className="px-3.5 py-2 border border-border hover:border-violet-500/40 bg-card hover:bg-muted font-mono text-xs uppercase tracking-wider text-foreground rounded-none transition-all inline-flex items-center gap-2 cursor-pointer shadow-xs active:scale-95"
+                title="Import from a resume already saved in the software"
               >
-                <FileText size={13} />
-                Import from Resume
+                <FileText size={13} className="text-violet-500" />
+                <span>
+                  Import from Resume <span className="text-[10px] text-muted-foreground font-normal">(In-App)</span>
+                </span>
               </button>
+
+              {/* Option 2: Resume already yours on local system */}
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="px-3.5 py-2 border border-border hover:border-amber-500/40 bg-card hover:bg-muted font-mono text-xs uppercase tracking-wider text-foreground rounded-none transition-all inline-flex items-center gap-2 cursor-pointer shadow-xs active:scale-95"
+                title="Upload your own resume file from your device"
+              >
+                <Upload size={13} className="text-amber-500" />
+                <span>
+                  Import from Resume <span className="text-[10px] text-muted-foreground font-normal">(Upload File)</span>
+                </span>
+              </button>
+
+              {/* Save Profile */}
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs uppercase tracking-wider rounded-none inline-flex items-center gap-2 disabled:opacity-50 transition-colors"
+                className="px-5 py-2 bg-primary hover:brightness-95 text-primary-foreground font-semibold text-xs uppercase tracking-wider rounded-none inline-flex items-center gap-2 disabled:opacity-50 transition-all cursor-pointer shadow-xs active:scale-95"
               >
                 <Save size={13} />
                 {isSaving ? "Saving..." : "Save Profile"}
@@ -923,30 +989,30 @@ export default function ProfileBuilder() {
 
         </div>
 
-      {/* RESUME IMPORT MODAL */}
+      {/* RESUME IMPORT MODAL (IN-APP RESUMES) */}
       {showImportModal && (
         <div 
-          className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-background/80 backdrop-blur-xs"
           onClick={() => setShowImportModal(false)}
         >
           <div 
-            className="relative w-full max-w-xl max-h-[80vh] flex flex-col bg-card shadow-2xl border border-border rounded-none"
+            className="relative w-full max-w-xl max-h-[80vh] flex flex-col bg-card shadow-2xl border border-border rounded-none overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-border bg-card">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-none border border-border bg-background flex items-center justify-center">
+                <div className="w-8 h-8 rounded-none border border-border bg-muted flex items-center justify-center text-foreground">
                   <FileText size={15} />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-foreground">Import Profile From Resume</h2>
-                  <p className="text-xs text-muted-foreground">Select an existing document to extract profile details.</p>
+                  <h2 className="text-sm font-bold text-foreground">Import from Resume (Saved in Software)</h2>
+                  <p className="text-xs text-muted-foreground">Select an existing resume already saved in SkillBridge to extract profile details.</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowImportModal(false)}
-                className="p-1 text-muted-foreground hover:text-foreground border border-transparent hover:border-border rounded-none transition-colors"
+                className="p-1 text-muted-foreground hover:text-foreground border border-transparent hover:border-border rounded-none transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -956,14 +1022,14 @@ export default function ProfileBuilder() {
             <div className="flex-1 overflow-auto p-4 space-y-2 bg-background">
               {loadingResumes ? (
                 <div className="flex flex-col justify-center items-center h-48 gap-3">
-                  <div className="w-5 h-5 border-2 border-border border-t-foreground rounded-none animate-spin" />
-                  <p className="font-mono text-xs uppercase text-muted-foreground">Fetching resumes...</p>
+                  <div className="w-5 h-5 border-2 border-violet-500/30 border-t-violet-500 rounded-none animate-spin" />
+                  <p className="font-mono text-xs uppercase text-muted-foreground">Fetching in-app resumes...</p>
                 </div>
               ) : userResumes.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground font-mono text-xs space-y-1">
-                  <FileText size={28} className="mx-auto mb-2 opacity-30" />
-                  <p className="font-bold">No Resumes Found</p>
-                  <p className="text-xs text-muted-foreground">Create a resume first to extract details.</p>
+                  <FileText size={28} className="mx-auto mb-2 opacity-30 text-violet-500" />
+                  <p className="font-bold text-foreground">No Resumes in Software Database</p>
+                  <p className="text-xs text-muted-foreground">Create a resume first or use the "Import from Resume (Upload File)" option.</p>
                 </div>
               ) : (
                 <div className="divide-y divide-border border border-border">
@@ -977,7 +1043,7 @@ export default function ProfileBuilder() {
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <FileText size={15} className="text-muted-foreground shrink-0" />
+                        <FileText size={15} className="text-violet-500 shrink-0" />
                         <div>
                           <p className="font-semibold text-xs text-foreground line-clamp-1">{resItem.title}</p>
                           <p className="font-mono text-[10px] text-muted-foreground mt-0.5">
@@ -995,11 +1061,121 @@ export default function ProfileBuilder() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-2 p-3.5 border-t border-border bg-card">
+            <div className="flex items-center justify-between p-3.5 border-t border-border bg-card">
+              <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                {userResumes.length} saved resume{userResumes.length !== 1 ? "s" : ""}
+              </span>
               <button
                 onClick={() => setShowImportModal(false)}
                 disabled={importing}
-                className="px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground border border-border bg-background rounded-none transition-colors"
+                className="px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground border border-border bg-background rounded-none transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RESUME UPLOAD MODAL (LOCAL RESUME FILE) */}
+      {showUploadModal && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-background/80 backdrop-blur-xs"
+          onClick={() => !isUploadingFile && setShowUploadModal(false)}
+        >
+          <div 
+            className="relative w-full max-w-xl flex flex-col bg-card shadow-2xl border border-border rounded-none overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border bg-card">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-none border border-border bg-muted flex items-center justify-center text-foreground">
+                  <Upload size={15} />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-foreground">Import from Resume (Your Local File)</h2>
+                  <p className="text-xs text-muted-foreground">Upload a resume file from your computer to automatically build your master profile.</p>
+                </div>
+              </div>
+              <button
+                onClick={() => !isUploadingFile && setShowUploadModal(false)}
+                disabled={isUploadingFile}
+                className="p-1 text-muted-foreground hover:text-foreground border border-transparent hover:border-border rounded-none transition-colors cursor-pointer disabled:opacity-40"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 bg-background space-y-4">
+              {isUploadingFile ? (
+                <div className="flex flex-col justify-center items-center py-12 gap-3 text-center">
+                  <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
+                  <div className="space-y-1">
+                    <p className="font-mono text-xs uppercase tracking-wider text-foreground font-semibold">
+                      Analyzing resume with AI...
+                    </p>
+                    <p className="text-xs text-muted-foreground max-w-sm">
+                      Extracting your work experience, projects, skills, education, and credentials into your master profile.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragActive(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleFileUpload(file);
+                    }}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={cn(
+                      "border-2 border-dashed p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors rounded-none",
+                      dragActive 
+                        ? "border-foreground bg-muted/40 shadow-xs" 
+                        : "border-border hover:border-foreground/40 hover:bg-muted/20"
+                    )}
+                  >
+                    <div className="w-12 h-12 border border-border bg-card flex items-center justify-center text-foreground mb-3">
+                      <FileUp size={20} className="text-foreground" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-foreground">
+                        Click to browse or drag & drop your resume file here
+                      </p>
+                      <p className="font-mono text-[11px] text-muted-foreground">
+                        Supports PDF (.pdf) and Text (.txt) up to 5MB
+                      </p>
+                    </div>
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.txt"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file);
+                    }}
+                  />
+                </>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between p-3.5 border-t border-border bg-card">
+              <span className="font-mono text-[10px] text-muted-foreground uppercase">
+                AI Structured Parsing Enabled
+              </span>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                disabled={isUploadingFile}
+                className="px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground border border-border bg-background rounded-none transition-colors cursor-pointer disabled:opacity-40"
               >
                 Cancel
               </button>

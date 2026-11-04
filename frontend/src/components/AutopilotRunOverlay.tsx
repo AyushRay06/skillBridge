@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Loader2, Sparkles, X, Terminal } from "lucide-react";
+import { CheckCircle2, Loader2, Sparkles, X, Terminal } from "@/components/animate-ui/icons";
 import { cn } from "@/lib/utils";
 import { axiosAPI } from "@/lib/axiosInterface";
 

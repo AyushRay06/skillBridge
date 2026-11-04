@@ -10,22 +10,9 @@ import LiveMarqueeTicker from "@/components/LiveMarqueeTicker";
 import GrainOverlay from "@/components/GrainOverlay";
 import HatchedSectionDivider from "@/components/HatchedSectionDivider";
 import Navbar from "@/components/Navbar";
+import { LandingLanguageProvider } from "@/contexts/LandingLanguageContext";
 import type { Metadata } from "next";
-import { Rajdhani, Chakra_Petch } from "next/font/google";
-
 import { Briefcase, Laptop, Globe, FileText, Sparkles } from "lucide-react";
-
-const rajdhani = Rajdhani({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-rajdhani",
-});
-
-const chakraPetch = Chakra_Petch({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-chakra",
-});
 
 export const metadata: Metadata = {
   title: "CareerCrew AI — Autonomous Multi-Agent AI Resume Builder & Job Search Platform",
@@ -38,13 +25,14 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className={`landing-page ${rajdhani.variable} ${chakraPetch.variable} relative min-h-screen bg-background text-foreground antialiased selection:bg-foreground selection:text-background`}>
-      {/* High-frequency analog film-grain texture overlay */}
-      <GrainOverlay />
+    <LandingLanguageProvider>
+      <div className="landing-page relative min-h-screen bg-background text-foreground antialiased selection:bg-foreground selection:text-background">
+        {/* High-frequency analog film-grain texture overlay */}
+        <GrainOverlay />
 
-      <Navbar />
+        <Navbar />
 
-      <main className="relative z-10">
+        <main className="relative z-10">
         {/* Hero Section */}
         <section id="hero" aria-label="AI Resume Builder Hero">
           <HeroSection />
@@ -113,5 +101,6 @@ export default function Home() {
       {/* Dark Technical Footer with Giant CAREERCREW Typographic Wordmark */}
       <FooterNew />
     </div>
+    </LandingLanguageProvider>
   );
 }

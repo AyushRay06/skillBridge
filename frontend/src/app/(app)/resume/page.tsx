@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { axiosAPI } from "@/lib/axiosInterface";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, ChevronRight, Plus, X, List, GraduationCap, Briefcase, User, Trophy, FileText, Zap, Terminal } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X, List, GraduationCap, Briefcase, User, Trophy, FileText, Zap, Terminal } from "@/components/animate-ui/icons";
 import ResumeDisplay from "@/components/ResumeDisplay";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";

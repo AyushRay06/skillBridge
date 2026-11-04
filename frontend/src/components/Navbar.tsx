@@ -20,6 +20,8 @@ export default function Navbar() {
     { label: t.nav.pipeline, href: "/#pipeline" },
     { label: t.nav.telemetry, href: "/#telemetry" },
     { label: t.nav.platform, href: "/#features" },
+    { label: t.nav.campus, href: "/#campus" },
+    { label: t.nav.multimodal, href: "/#multimodal" },
     { label: t.nav.testimonials, href: "/#testimonials" },
     { label: t.nav.pricing, href: "/#pricing" },
     { label: t.nav.faq, href: "/#faq" },
@@ -45,7 +47,7 @@ export default function Navbar() {
           {/* Desktop Navigation with Expansive Negative Spacing */}
           <nav
             aria-label="Main Navigation"
-            className="hidden lg:flex items-center gap-10 xl:gap-14 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground"
+            className="hidden lg:flex items-center gap-5 xl:gap-8 font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground"
           >
             {navLinks.map((link) => (
               <Link

@@ -19,12 +19,15 @@ export function FooterNew() {
     { label: "1-Click Apply", href: "/apply" },
     { label: "LaTeX Resumes", href: "/resume" },
     { label: "Autopilot Dispatch", href: "/autopilot" },
-    { label: "Job Crawler", href: "/jobs" },
+    { label: "Career Campus", href: "/#campus" },
+    { label: "Career Guide AI", href: "/career-guide" },
+    { label: "WhatsApp Bot", href: "/whatsapp" },
   ];
 
   const platformLinks = [
     { label: "Architecture", href: "/#pipeline" },
     { label: "Telemetry", href: "/#telemetry" },
+    { label: "Multimodal Models", href: "/#multimodal" },
     { label: "Pricing", href: "/#pricing" },
     { label: "FAQ", href: "/#faq" },
   ];

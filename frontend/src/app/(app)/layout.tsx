@@ -10,6 +10,8 @@ import { usePathname } from "next/navigation";
 import { FullPageSkeleton } from "@/components/skeletons";
 import GrainBackground from "@/components/GrainBackground";
 import { ModeToggle } from "@/components/theme-toggle";
+import { LandingLanguageToggle } from "@/components/LandingLanguageToggle";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
 
 // Map routes to readable page titles
 const PAGE_TITLES: Record<string, string> = {
@@ -27,8 +29,24 @@ const PAGE_TITLES: Record<string, string> = {
   "/whatsapp": "WhatsApp Agent",
 };
 
-function getTitle(pathname: string) {
-  for (const [path, title] of Object.entries(PAGE_TITLES)) {
+const PAGE_TITLES_AS: Record<string, string> = {
+  "/dashboard": "ডেছব’ৰ্ড",
+  "/jobs": "চাকৰি",
+  "/saved-jobs": "সংৰক্ষিত চাকৰি",
+  "/saved-resumes": "সংৰক্ষিত ৰিজ্যুমে",
+  "/resume": "ৰিজ্যুমে সৃষ্টি",
+  "/apply": "এটা ক্লিকেৰে আবেদন",
+  "/autopilot": "জব অটো-পাইলট",
+  "/profile": "মাষ্টাৰ প্ৰফাইল",
+  "/billing": "বিলিং",
+  "/settings": "ছেটিংছ",
+  "/career-guide": "কেৰিয়াৰ গাইড",
+  "/whatsapp": "হোৱাটছএপ এজেণ্ট",
+};
+
+function getTitle(pathname: string, lang?: string) {
+  const titles = lang === "as" ? PAGE_TITLES_AS : PAGE_TITLES;
+  for (const [path, title] of Object.entries(titles)) {
     if (pathname === path || pathname.startsWith(path + "/")) return title;
   }
   return "CareerCrew";
@@ -36,6 +54,7 @@ function getTitle(pathname: string) {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
+  const { lang } = useLandingLanguage();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -63,15 +82,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors flex items-center justify-center shrink-0 cursor-pointer" />
               <Separator orientation="vertical" className="h-4 mx-1 opacity-50" />
               <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
-                <span className="text-muted-foreground/70 hidden sm:inline font-normal">Workspace</span>
+                <span className="text-muted-foreground/70 hidden sm:inline font-normal">{lang === "as" ? "ৱৰ্কস্পেচ" : "Workspace"}</span>
                 <span className="text-muted-foreground/30 hidden sm:inline">/</span>
                 <span className="font-semibold text-foreground flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  {getTitle(pathname)}
+                  {getTitle(pathname, lang)}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <LandingLanguageToggle variant="compact" className="rounded-md h-8 text-xs font-mono" />
               <ModeToggle />
             </div>
           </header>

@@ -27,10 +27,15 @@ import {
 import { MessageSquare, ArrowUpRight } from "lucide-react";
 import { FullPageSkeleton } from "@/components/skeletons";
 import { getCached, setCache } from "@/lib/clientCache";
+import { useLandingLanguage } from "@/contexts/LandingLanguageContext";
+import { LandingLanguageToggle } from "@/components/LandingLanguageToggle";
+import { DASHBOARD_TRANSLATIONS } from "@/lib/dashboardTranslations";
 
 export default function Dashboard() {
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { lang } = useLandingLanguage();
+  const dt = DASHBOARD_TRANSLATIONS[lang] || DASHBOARD_TRANSLATIONS.en;
   const [mounted, setMounted] = useState(false);
 
   const [stats, setStats] = useState(() => {
@@ -152,11 +157,19 @@ export default function Dashboard() {
   if (!mounted || authLoading) return <FullPageSkeleton />;
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric"
-    });
+    try {
+      return new Date(dateStr).toLocaleDateString(lang === "as" ? "as-IN" : "en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    } catch {
+      return new Date(dateStr).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    }
   };
 
   return (
@@ -168,21 +181,23 @@ export default function Dashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/80 pb-5">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Dashboard
+            {dt.header.title}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Track your resumes, active job applications, and placement readiness.
+            {dt.header.subtitle}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <LandingLanguageToggle variant="pill" className="rounded-md h-8 text-xs border-border bg-card" />
+
           <button 
             type="button"
             onClick={() => router.push("/apply")}
             className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-foreground text-background hover:bg-foreground/90 transition-all rounded-md shadow-xs cursor-pointer active:scale-98"
           >
             <Zap size={14} />
-            <span>One-Click Apply</span>
+            <span>{dt.header.oneClickApply}</span>
           </button>
 
           <button 
@@ -191,7 +206,7 @@ export default function Dashboard() {
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium border border-border bg-card hover:bg-muted text-foreground transition-all rounded-md cursor-pointer active:scale-98"
           >
             <Plus size={14} className="text-muted-foreground" />
-            <span>New Resume</span>
+            <span>{dt.header.newResume}</span>
           </button>
 
           <button 
@@ -200,7 +215,7 @@ export default function Dashboard() {
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium border border-border bg-card hover:bg-muted text-foreground transition-all rounded-md cursor-pointer active:scale-98"
           >
             <Compass size={14} className="text-emerald-500" />
-            <span>Career Guide</span>
+            <span>{dt.header.careerGuide}</span>
           </button>
         </div>
       </div>
@@ -216,7 +231,7 @@ export default function Dashboard() {
           className="border border-border/70 bg-card p-5 rounded-lg hover:border-border hover:shadow-xs transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-muted-foreground mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider">Total Resumes</span>
+            <span className="text-xs font-medium uppercase tracking-wider">{dt.metrics.totalResumes}</span>
             <div className="w-8 h-8 rounded-md bg-muted/70 flex items-center justify-center text-foreground group-hover:text-foreground transition-colors">
               <FileText size={15} />
             </div>
@@ -224,7 +239,7 @@ export default function Dashboard() {
           <div className="text-3xl font-bold tracking-tight text-foreground font-mono mb-1">
             {loading ? "..." : stats.totalResumes}
           </div>
-          <p className="text-xs text-muted-foreground">Tailored ATS documents created</p>
+          <p className="text-xs text-muted-foreground">{dt.metrics.totalResumesDesc}</p>
         </div>
 
         {/* Metric 02: Jobs Discovered */}
@@ -233,7 +248,7 @@ export default function Dashboard() {
           className="border border-border/70 bg-card p-5 rounded-lg hover:border-border hover:shadow-xs transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-muted-foreground mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider">Jobs Discovered</span>
+            <span className="text-xs font-medium uppercase tracking-wider">{dt.metrics.jobsDiscovered}</span>
             <div className="w-8 h-8 rounded-md bg-muted/70 flex items-center justify-center text-foreground group-hover:text-foreground transition-colors">
               <Briefcase size={15} />
             </div>
@@ -241,7 +256,7 @@ export default function Dashboard() {
           <div className="text-3xl font-bold tracking-tight text-foreground font-mono mb-1">
             {loading ? "..." : stats.totalJobs}
           </div>
-          <p className="text-xs text-muted-foreground">Matching opportunities indexed</p>
+          <p className="text-xs text-muted-foreground">{dt.metrics.jobsDiscoveredDesc}</p>
         </div>
 
         {/* Metric 03: Active Autopilots */}
@@ -250,7 +265,7 @@ export default function Dashboard() {
           className="border border-border/70 bg-card p-5 rounded-lg hover:border-border hover:shadow-xs transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-muted-foreground mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider">Active Autopilots</span>
+            <span className="text-xs font-medium uppercase tracking-wider">{dt.metrics.activeAutopilots}</span>
             <div className="w-8 h-8 rounded-md bg-muted/70 flex items-center justify-center text-foreground group-hover:text-foreground transition-colors">
               <Activity size={15} />
             </div>
@@ -262,11 +277,11 @@ export default function Dashboard() {
             {stats.activeAgents > 0 && (
               <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Live
+                {dt.metrics.live}
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">Background search agents running</p>
+          <p className="text-xs text-muted-foreground">{dt.metrics.activeAutopilotsDesc}</p>
         </div>
 
         {/* Metric 04: Placement Readiness */}
@@ -275,7 +290,7 @@ export default function Dashboard() {
           className="border border-border/70 bg-card p-5 rounded-lg hover:border-border hover:shadow-xs transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between text-muted-foreground mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider">Placement Readiness</span>
+            <span className="text-xs font-medium uppercase tracking-wider">{dt.metrics.placementReadiness}</span>
             <div className="w-8 h-8 rounded-md bg-muted/70 flex items-center justify-center text-foreground group-hover:text-foreground transition-colors">
               <GraduationCap size={15} />
             </div>
@@ -285,11 +300,11 @@ export default function Dashboard() {
               {loading ? "..." : `${stats.placementReadiness}%`}
             </div>
             <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold font-mono uppercase">
-              Tier 1 Ready
+              {dt.metrics.tier1Ready}
             </span>
           </div>
           <p className="text-xs text-muted-foreground">
-            {stats.activeRoadmaps} Career Roadmap{stats.activeRoadmaps !== 1 ? "s" : ""} active
+            {dt.metrics.roadmapsActive(stats.activeRoadmaps)}
           </p>
         </div>
 
@@ -309,16 +324,16 @@ export default function Dashboard() {
               <div>
                 <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
                   <Compass className="h-4 w-4 text-emerald-500" />
-                  <span>Career Guide &amp; Voice Advisory</span>
+                  <span>{dt.careerGuideHub.title}</span>
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Bilingual career consulting, placement readiness audits, and real-time mock interviews.
+                  {dt.careerGuideHub.subtitle}
                 </p>
               </div>
 
               <div className="flex items-center gap-1.5 self-start sm:self-auto font-mono text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Voice Call Ready</span>
+                <span>{dt.careerGuideHub.voiceReady}</span>
               </div>
             </div>
 
@@ -326,27 +341,27 @@ export default function Dashboard() {
             <div className="flex flex-wrap gap-2 text-xs">
               <button
                 type="button"
-                onClick={() => router.push("/career-guide?prompt=What roles suit me and what are my skill gaps?")}
+                onClick={() => router.push(lang === "as" ? "/career-guide?prompt=মোৰ বাবে কি কি পদ উপযুক্ত আৰু মোৰ দক্ষতাৰ ব্যৱধান কি কি?" : "/career-guide?prompt=What roles suit me and what are my skill gaps?")}
                 className="px-3 py-1.5 border border-border bg-background hover:bg-muted text-foreground transition-colors rounded-md flex items-center gap-1.5 cursor-pointer"
               >
                 <Target size={12} className="text-muted-foreground" />
-                <span>Analyze Skill Gaps</span>
+                <span>{dt.careerGuideHub.prompts.skillGaps}</span>
               </button>
               <button
                 type="button"
-                onClick={() => router.push("/career-guide?prompt=Make me a step-by-step career roadmap for my profile")}
+                onClick={() => router.push(lang === "as" ? "/career-guide?prompt=মোৰ প্ৰফাইলৰ বাবে এটা ধাপে ধাপে কেৰিয়াৰ ৰোডমেপ বনাওক" : "/career-guide?prompt=Make me a step-by-step career roadmap for my profile")}
                 className="px-3 py-1.5 border border-border bg-background hover:bg-muted text-foreground transition-colors rounded-md flex items-center gap-1.5 cursor-pointer"
               >
                 <Compass size={12} className="text-muted-foreground" />
-                <span>Generate Career Roadmap</span>
+                <span>{dt.careerGuideHub.prompts.roadmap}</span>
               </button>
               <button
                 type="button"
-                onClick={() => router.push("/career-guide?prompt=Review my resume and suggest improvements")}
+                onClick={() => router.push(lang === "as" ? "/career-guide?prompt=মোৰ ৰিজ্যুমে পৰীক্ষা কৰক আৰু পৰামৰ্শ দিয়ক" : "/career-guide?prompt=Review my resume and suggest improvements")}
                 className="px-3 py-1.5 border border-border bg-background hover:bg-muted text-foreground transition-colors rounded-md flex items-center gap-1.5 cursor-pointer"
               >
                 <FileText size={12} className="text-muted-foreground" />
-                <span>ATS Resume Review</span>
+                <span>{dt.careerGuideHub.prompts.resumeReview}</span>
               </button>
             </div>
 
@@ -358,7 +373,7 @@ export default function Dashboard() {
                 className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold rounded-md transition-colors cursor-pointer"
               >
                 <PhoneCall size={13} />
-                <span>Start Voice Call</span>
+                <span>{dt.careerGuideHub.startVoiceCall}</span>
               </button>
 
               <button
@@ -366,7 +381,7 @@ export default function Dashboard() {
                 onClick={() => router.push("/career-guide")}
                 className="inline-flex items-center gap-2 px-4 py-2 border border-border bg-background hover:bg-muted text-foreground text-xs font-semibold rounded-md transition-colors cursor-pointer"
               >
-                <span>Open Advisory Chat</span>
+                <span>{dt.careerGuideHub.openChat}</span>
                 <ArrowRight size={13} />
               </button>
             </div>
@@ -377,14 +392,14 @@ export default function Dashboard() {
             <div className="px-5 py-3.5 border-b border-border/80 flex items-center justify-between bg-muted/20">
               <div className="flex items-center gap-2 text-foreground font-semibold text-xs uppercase tracking-wider">
                 <Target size={14} className="text-emerald-500" />
-                <span>Active Learning Roadmap</span>
+                <span>{dt.roadmap.sectionTitle}</span>
               </div>
               <button 
                 type="button"
                 onClick={() => router.push("/career-guide")}
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
-                <span>All roadmaps ({stats.activeRoadmaps})</span>
+                <span>{dt.roadmap.allRoadmaps(stats.activeRoadmaps)}</span>
                 <ChevronRight size={13} />
               </button>
             </div>
@@ -395,12 +410,12 @@ export default function Dashboard() {
                   <div>
                     <h3 className="text-sm font-bold text-foreground">{latestRoadmap.title}</h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Target Role: <span className="text-foreground font-medium">{latestRoadmap.targetRole || "Engineering Role"}</span>
+                      {dt.roadmap.targetRoleLabel}: <span className="text-foreground font-medium">{latestRoadmap.targetRole || dt.roadmap.defaultRole}</span>
                     </p>
                   </div>
                   {latestRoadmap.estimatedWeeks && (
                     <span className="font-mono text-[10px] px-2 py-0.5 border border-border bg-background text-muted-foreground rounded-md w-fit">
-                      ~{latestRoadmap.estimatedWeeks} Weeks
+                      {dt.roadmap.weeks(latestRoadmap.estimatedWeeks)}
                     </span>
                   )}
                 </div>
@@ -408,9 +423,12 @@ export default function Dashboard() {
                 {latestRoadmap.steps && latestRoadmap.steps.length > 0 && (
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Curriculum Milestones</span>
+                      <span>{dt.roadmap.curriculumMilestones}</span>
                       <span className="text-foreground font-medium font-mono text-[11px]">
-                        {latestRoadmap.steps.filter((s: any) => s.status === "done").length} / {latestRoadmap.steps.length} Completed
+                        {dt.roadmap.completedCount(
+                          latestRoadmap.steps.filter((s: any) => s.status === "done").length,
+                          latestRoadmap.steps.length
+                        )}
                       </span>
                     </div>
 
@@ -441,7 +459,7 @@ export default function Dashboard() {
                             <span className="truncate text-foreground font-medium">{step.title}</span>
                           </div>
                           <span className="text-[10px] text-muted-foreground uppercase font-mono shrink-0 pl-2">
-                            {step.status === "done" ? "Done" : step.status === "in_progress" ? "In Progress" : "Upcoming"}
+                            {step.status === "done" ? dt.roadmap.stepStatus.done : step.status === "in_progress" ? dt.roadmap.stepStatus.inProgress : dt.roadmap.stepStatus.upcoming}
                           </span>
                         </div>
                       ))}
@@ -454,7 +472,7 @@ export default function Dashboard() {
                   onClick={() => router.push(`/career-guide?roadmap=${latestRoadmap.id}`)}
                   className="w-full py-2 border border-border bg-muted/30 hover:bg-muted text-foreground text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Continue Curriculum Path</span>
+                  <span>{dt.roadmap.continuePath}</span>
                   <ArrowRight size={13} />
                 </button>
               </div>
@@ -464,9 +482,9 @@ export default function Dashboard() {
                   <Compass size={18} />
                 </div>
                 <div className="space-y-0.5">
-                  <p className="font-semibold text-foreground">No active roadmap saved</p>
+                  <p className="font-semibold text-foreground">{dt.roadmap.emptyTitle}</p>
                   <p className="text-muted-foreground text-xs">
-                    Synthesize a step-by-step learning roadmap tailored to your target role.
+                    {dt.roadmap.emptyDesc}
                   </p>
                 </div>
                 <button
@@ -475,7 +493,7 @@ export default function Dashboard() {
                   className="px-3.5 py-1.5 bg-foreground text-background text-xs font-semibold rounded-md hover:bg-foreground/90 transition-colors inline-flex items-center gap-1.5 cursor-pointer mt-1"
                 >
                   <Sparkles size={12} />
-                  <span>Generate Roadmap</span>
+                  <span>{dt.roadmap.generateRoadmap}</span>
                 </button>
               </div>
             )}
@@ -486,14 +504,14 @@ export default function Dashboard() {
             <div className="px-5 py-3.5 border-b border-border/80 flex items-center justify-between bg-muted/20">
               <div className="flex items-center gap-2 text-foreground font-semibold text-xs uppercase tracking-wider">
                 <FileText size={14} className="text-emerald-500" />
-                <span>Recent Resumes</span>
+                <span>{dt.recentResumes.sectionTitle}</span>
               </div>
               <button 
                 type="button"
                 onClick={() => router.push("/saved-resumes")}
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
-                <span>View all ({stats.totalResumes})</span>
+                <span>{dt.recentResumes.viewAll(stats.totalResumes)}</span>
                 <ChevronRight size={13} />
               </button>
             </div>
@@ -517,17 +535,17 @@ export default function Dashboard() {
                       </div>
                       <div className="min-w-0">
                         <h4 className="font-medium text-xs sm:text-sm text-foreground truncate">
-                          {resume.title || "Untitled Resume"}
+                          {resume.title || dt.recentResumes.untitled}
                         </h4>
                         <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
                           <Clock size={11} />
-                          <span>Updated {formatDate(resume.updatedAt || resume.createdAt)}</span>
+                          <span>{dt.recentResumes.updated(formatDate(resume.updatedAt || resume.createdAt))}</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1 shrink-0 text-xs text-muted-foreground group-hover:text-foreground">
-                      <span className="hidden sm:inline">Inspect</span>
+                      <span className="hidden sm:inline">{dt.recentResumes.inspect}</span>
                       <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
                     </div>
                   </div>
@@ -538,13 +556,13 @@ export default function Dashboard() {
                 <div className="w-9 h-9 rounded-md bg-muted flex items-center justify-center mx-auto text-muted-foreground">
                   <FileText size={18} />
                 </div>
-                <p className="font-semibold text-foreground">No resumes created yet</p>
+                <p className="font-semibold text-foreground">{dt.recentResumes.emptyTitle}</p>
                 <button 
                   type="button"
                   onClick={() => router.push("/resume")}
                   className="px-3.5 py-1.5 bg-foreground text-background text-xs font-semibold rounded-md hover:bg-foreground/90 transition-colors cursor-pointer mt-1"
                 >
-                  Create Resume
+                  {dt.recentResumes.createResume}
                 </button>
               </div>
             )}
@@ -560,21 +578,21 @@ export default function Dashboard() {
             <div className="flex items-center justify-between border-b border-border/70 pb-3">
               <div className="flex items-center gap-2 font-semibold text-xs uppercase tracking-wider text-foreground">
                 <User size={14} className="text-emerald-500" />
-                <span>Master Profile</span>
+                <span>{dt.profile.sectionTitle}</span>
               </div>
               <button 
                 type="button"
                 onClick={() => router.push("/profile")}
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
-                <span>Edit</span>
+                <span>{dt.profile.edit}</span>
                 <ChevronRight size={13} />
               </button>
             </div>
 
             <div className="space-y-3">
               <div className="flex items-baseline justify-between">
-                <span className="text-xs text-muted-foreground">Completeness</span>
+                <span className="text-xs text-muted-foreground">{dt.profile.completeness}</span>
                 <span className="text-sm font-bold text-foreground font-mono">
                   {stats.profileCompleteness}%
                 </span>
@@ -591,21 +609,21 @@ export default function Dashboard() {
                 <CheckCircle2 size={12} className={cn(stats.profileCompleteness >= 80 ? "text-emerald-500" : "text-muted-foreground")} />
                 <span>
                   {stats.profileCompleteness >= 80 
-                    ? "Ready for high-precision tailoring"
-                    : "Complete profile to improve match scoring"}
+                    ? dt.profile.readyHint
+                    : dt.profile.incompleteHint}
                 </span>
               </div>
 
               {userProfile && (
                 <div className="flex flex-wrap gap-1.5 pt-1.5 border-t border-border/60 text-xs">
                   <span className="px-2 py-0.5 rounded-md bg-muted text-foreground/80 font-mono text-[11px]">
-                    {Array.isArray(userProfile.skills) ? userProfile.skills.length : 0} Skills
+                    {dt.profile.skillsCount(Array.isArray(userProfile.skills) ? userProfile.skills.length : 0)}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-muted text-foreground/80 font-mono text-[11px]">
-                    {Array.isArray(userProfile.experience) ? userProfile.experience.length : 0} Jobs
+                    {dt.profile.jobsCount(Array.isArray(userProfile.experience) ? userProfile.experience.length : 0)}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-muted text-foreground/80 font-mono text-[11px]">
-                    {Array.isArray(userProfile.projects) ? userProfile.projects.length : 0} Projects
+                    {dt.profile.projectsCount(Array.isArray(userProfile.projects) ? userProfile.projects.length : 0)}
                   </span>
                 </div>
               )}
@@ -616,7 +634,7 @@ export default function Dashboard() {
                 className="w-full py-2 border border-border bg-card hover:bg-muted text-foreground text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer mt-1"
               >
                 <Upload size={12} />
-                <span>Import from Resume</span>
+                <span>{dt.profile.importFromResume}</span>
               </button>
             </div>
           </div>
@@ -626,14 +644,14 @@ export default function Dashboard() {
             <div className="flex items-center justify-between border-b border-border/70 pb-3">
               <div className="flex items-center gap-2 font-semibold text-xs uppercase tracking-wider text-foreground">
                 <Activity size={14} className="text-emerald-500" />
-                <span>Autopilot Agents</span>
+                <span>{dt.autopilot.sectionTitle}</span>
               </div>
               <button 
                 type="button"
                 onClick={() => router.push("/autopilot")}
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
               >
-                <span>Manage</span>
+                <span>{dt.autopilot.manage}</span>
                 <ChevronRight size={13} />
               </button>
             </div>
@@ -651,7 +669,7 @@ export default function Dashboard() {
                             ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
                             : "border border-border bg-muted text-muted-foreground"
                         )}>
-                          {schedule.isActive ? "Active" : "Paused"}
+                          {schedule.isActive ? dt.autopilot.active : dt.autopilot.paused}
                         </span>
                       </div>
                       <p className="text-[11px] text-muted-foreground truncate">
@@ -663,7 +681,7 @@ export default function Dashboard() {
               ) : (
                 <div className="text-center py-5 space-y-1 text-xs">
                   <Activity size={18} className="mx-auto text-muted-foreground opacity-40" />
-                  <p className="text-muted-foreground">No autopilot queues created yet.</p>
+                  <p className="text-muted-foreground">{dt.autopilot.emptyDesc}</p>
                 </div>
               )}
 
@@ -672,7 +690,7 @@ export default function Dashboard() {
                 onClick={() => router.push("/autopilot")}
                 className="w-full py-2 border border-border bg-card hover:bg-muted text-foreground text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Configure Autopilots</span>
+                <span>{dt.autopilot.configure}</span>
                 <ArrowRight size={12} />
               </button>
             </div>
@@ -683,15 +701,15 @@ export default function Dashboard() {
             <div className="flex items-center justify-between border-b border-border/70 pb-2.5">
               <div className="flex items-center gap-2 font-semibold text-xs uppercase tracking-wider text-foreground">
                 <MessageSquare size={14} className="text-emerald-500" />
-                <span>WhatsApp Alerts</span>
+                <span>{dt.whatsapp.sectionTitle}</span>
               </div>
               <span className="px-1.5 py-0.5 rounded-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[9px] font-semibold font-mono">
-                Live
+                {dt.whatsapp.liveBadge}
               </span>
             </div>
 
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Get daily placement practice questions, roadmap milestone updates, and job alerts directly on WhatsApp.
+              {dt.whatsapp.desc}
             </p>
 
             <button
@@ -699,7 +717,7 @@ export default function Dashboard() {
               onClick={() => router.push("/whatsapp")}
               className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
             >
-              <span>Connect on WhatsApp</span>
+              <span>{dt.whatsapp.connect}</span>
               <ArrowUpRight size={13} />
             </button>
           </div>

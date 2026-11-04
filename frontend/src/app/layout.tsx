@@ -6,6 +6,7 @@ import "@fontsource-variable/geist-mono";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LandingLanguageProvider } from "@/contexts/LandingLanguageContext";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -258,8 +259,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
-            <Toaster position="top-right" />
+            <LandingLanguageProvider>
+              {children}
+              <Toaster position="top-right" />
+            </LandingLanguageProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

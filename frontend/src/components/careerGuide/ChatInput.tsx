@@ -16,12 +16,13 @@ import {
   AnimateIcon,
   Check,
 } from "@/components/animate-ui/icons";
-import { Languages } from "lucide-react";
+import { Languages, Keyboard } from "lucide-react";
 import { getSpeechRecognition } from "@/lib/speechVoice";
 import {
   transliterateAssameseWord,
   transliterateAssameseSentence,
 } from "@/lib/assameseTransliteration";
+import { AssameseKeyboard } from "./AssameseKeyboard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -58,6 +59,7 @@ export function ChatInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isListening, setIsListening] = useState(false);
   const [phoneticEnabled, setPhoneticEnabled] = useState(true);
+  const [showKeyboard, setShowKeyboard] = useState(false);
   const [hasLatinText, setHasLatinText] = useState(false);
   const recognitionRef = useRef<any>(null);
 
@@ -137,6 +139,55 @@ export function ChatInput({
     el.value = converted;
     resize();
     toast.success("অসমীয়ালৈ ৰূপান্তৰ কৰা হ’ল!");
+  };
+
+  // ── Assamese Virtual Keyboard Actions ─────────────────────────────────────
+  const handleInsertChar = (char: string) => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart ?? el.value.length;
+    const end = el.selectionEnd ?? el.value.length;
+    const currentVal = el.value;
+    el.value = currentVal.substring(0, start) + char + currentVal.substring(end);
+    const newPos = start + char.length;
+    el.selectionStart = newPos;
+    el.selectionEnd = newPos;
+    el.focus();
+    resize();
+  };
+
+  const handleKeyboardBackspace = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart ?? 0;
+    const end = el.selectionEnd ?? 0;
+    if (start === 0 && end === 0) return;
+    const currentVal = el.value;
+    if (start !== end) {
+      el.value = currentVal.substring(0, start) + currentVal.substring(end);
+      el.selectionStart = start;
+      el.selectionEnd = start;
+    } else {
+      const before = currentVal.substring(0, start - 1);
+      const after = currentVal.substring(start);
+      el.value = before + after;
+      el.selectionStart = start - 1;
+      el.selectionEnd = start - 1;
+    }
+    el.focus();
+    resize();
+  };
+
+  const handleKeyboardSpace = () => {
+    handleInsertChar(" ");
+  };
+
+  const handleKeyboardClear = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.value = "";
+    el.focus();
+    resize();
   };
 
   const submit = () => {
@@ -236,6 +287,22 @@ export function ChatInput({
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            {/* On-screen Assamese Keyboard Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowKeyboard((prev) => !prev)}
+              className={cn(
+                "px-2 py-0.5 text-[10px] font-mono border transition-colors cursor-pointer flex items-center gap-1",
+                showKeyboard
+                  ? "border-amber-500/80 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold"
+                  : "border-border text-muted-foreground hover:text-foreground"
+              )}
+              title="Toggle on-screen Assamese virtual keyboard"
+            >
+              <Keyboard className="w-2.5 h-2.5" />
+              <span>কিবৰ্ড: {showKeyboard ? "খোলা" : "বন্ধ"}</span>
+            </button>
+
             {hasLatinText && (
               <button
                 type="button"
@@ -287,6 +354,17 @@ export function ChatInput({
         className="w-full resize-none bg-transparent px-4 pt-3 pb-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none disabled:opacity-50 leading-relaxed"
         style={{ minHeight: "44px", maxHeight: "160px" }}
       />
+
+      {/* On-screen Assamese Virtual Keyboard */}
+      {showKeyboard && (
+        <AssameseKeyboard
+          onInsert={handleInsertChar}
+          onBackspace={handleKeyboardBackspace}
+          onClear={handleKeyboardClear}
+          onSpace={handleKeyboardSpace}
+          onClose={() => setShowKeyboard(false)}
+        />
+      )}
 
       {/* Bottom toolbar */}
       <div className="flex items-center gap-1.5 px-3 pb-2.5">
@@ -387,6 +465,35 @@ export function ChatInput({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* On-screen Assamese Keyboard Toggle Button */}
+        <Button
+          type="button"
+          variant={showKeyboard ? "default" : "ghost"}
+          size="sm"
+          onClick={() => {
+            if (!showKeyboard && language !== "as") {
+              onLanguageChange("as");
+            }
+            setShowKeyboard((prev) => !prev);
+          }}
+          disabled={disabled}
+          title={
+            showKeyboard
+              ? "Close Assamese keyboard (অসমীয়া কিবৰ্ড বন্ধ কৰক)"
+              : "Open Assamese on-screen keyboard (অসমীয়া কিবৰ্ড খোলক)"
+          }
+          className={cn(
+            "h-8 gap-1.5 font-mono text-[11px] transition-all cursor-pointer",
+            showKeyboard
+              ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-2xs font-semibold"
+              : "text-muted-foreground hover:text-foreground border border-border/40 hover:border-border"
+          )}
+        >
+          <Keyboard size={14} className={cn("w-3.5 h-3.5", showKeyboard ? "text-white" : "text-amber-500")} />
+          <span className="hidden sm:inline">অসমীয়া কিবৰ্ড</span>
+          <span className="sm:hidden">অসমীয়া</span>
+        </Button>
 
         {/* Quick prompt shortcuts directly in the toolbar (Language-aware) */}
         <div className="hidden md:flex items-center gap-1.5 ml-1 shrink-0">

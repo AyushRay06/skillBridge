@@ -27,8 +27,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <LandingLanguageProvider>
-      <div className="landing-page relative min-h-screen bg-background text-foreground antialiased selection:bg-foreground selection:text-background">
+    <div className="landing-page relative min-h-screen bg-background text-foreground antialiased selection:bg-foreground selection:text-background">
         {/* High-frequency analog film-grain texture overlay */}
         <GrainOverlay />
 
@@ -126,6 +125,5 @@ export default function Home() {
       {/* Dark Technical Footer with Giant CAREERCREW Typographic Wordmark */}
       <FooterNew />
     </div>
-    </LandingLanguageProvider>
   );
 }

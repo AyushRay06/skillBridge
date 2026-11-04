@@ -24,6 +24,7 @@ import {
 } from "@/components/animate-ui/icons";
 import { ChevronsUpDown, MessageSquare } from "lucide-react";
 import { PandaLogo } from "@/components/PandaLogo";
+import { getCached, setCache } from "@/lib/clientCache";
 import {
   Sidebar,
   SidebarContent,
@@ -168,7 +169,9 @@ interface SavedRoadmap {
 
 function RoadmapsSubSection({ pathname }: { pathname: string }) {
   const { isAuthenticated } = useAuth();
-  const [roadmaps, setRoadmaps] = useState<SavedRoadmap[]>([]);
+  const [roadmaps, setRoadmaps] = useState<SavedRoadmap[]>(() => {
+    return getCached<SavedRoadmap[]>("sidebar_roadmaps", 180_000) || [];
+  });
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeRoadmapId, setActiveRoadmapId] = useState<string | null>(null);
 
@@ -177,7 +180,9 @@ function RoadmapsSubSection({ pathname }: { pathname: string }) {
     axiosAPI
       .get("/career-guide/roadmaps")
       .then((res) => {
-        setRoadmaps(res.data.roadmaps ?? res.data ?? []);
+        const list = res.data.roadmaps ?? res.data ?? [];
+        setRoadmaps(list);
+        setCache("sidebar_roadmaps", list);
       })
       .catch(() => {
         // silently fail
@@ -252,7 +257,6 @@ function RoadmapsSubSection({ pathname }: { pathname: string }) {
                     <Link
                       key={rm.id}
                       href={href}
-                      prefetch={false}
                       className={cn(
                         "group/rm flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
                         isActive
@@ -374,7 +378,6 @@ export function AppSidebar() {
                     >
                       <Link
                         href={item.href}
-                        prefetch={false}
                         className="relative flex items-center gap-3 w-full h-full px-2.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
                       >
                         {/* Active Left Indicator Bar */}

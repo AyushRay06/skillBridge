@@ -11,6 +11,7 @@ import {
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { ProfilePageSkeleton } from "@/components/skeletons";
+import { getCached, setCache } from "@/lib/clientCache";
 
 interface ExperienceItem {
   title: string;
@@ -67,8 +68,12 @@ const initialProfile: ProfileData = {
 };
 
 export default function ProfileBuilder() {
-  const [profileData, setProfileData] = useState<ProfileData>(initialProfile);
-  const [loading, setLoading] = useState(true);
+  const [profileData, setProfileData] = useState<ProfileData>(() => {
+    return getCached<ProfileData>("user_profile", 300_000) || initialProfile;
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    return !getCached<ProfileData>("user_profile", 300_000);
+  });
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<"personal" | "experience" | "skills" | "achievements">("personal");
   const [newSkill, setNewSkill] = useState("");
@@ -93,10 +98,13 @@ export default function ProfileBuilder() {
 
   const fetchProfile = async () => {
     try {
-      setLoading(true);
+      if (!getCached("user_profile", 300_000)) {
+        setLoading(true);
+      }
       const response = await axiosAPI.get("/profile");
       if (response.data.profile) {
         setProfileData(response.data.profile);
+        setCache("user_profile", response.data.profile);
       }
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -120,6 +128,7 @@ export default function ProfileBuilder() {
     try {
       setIsSaving(true);
       await axiosAPI.post("/profile", profileData);
+      setCache("user_profile", profileData);
       toast.success("Profile saved successfully!");
     } catch (error: any) {
       toast.error(error.response?.data?.msg || "Failed to save profile.");
@@ -149,6 +158,7 @@ export default function ProfileBuilder() {
       const response = await axiosAPI.post(`/profile/import/${resumeId}`);
       if (response.data.profile) {
         setProfileData(response.data.profile);
+        setCache("user_profile", response.data.profile);
         toast.success("Profile updated from resume!");
         setShowImportModal(false);
       }
@@ -186,6 +196,7 @@ export default function ProfileBuilder() {
 
       if (res.data.profile) {
         setProfileData(res.data.profile);
+        setCache("user_profile", res.data.profile);
         toast.success(res.data.msg || "Master profile created from your resume!");
         setShowUploadModal(false);
       }

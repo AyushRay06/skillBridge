@@ -27,6 +27,7 @@ import { FormattedMessage } from "@/components/careerGuide/FormattedMessage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getCached, setCache } from "@/lib/clientCache";
 
 // ── Helpers ─────────────────────────────────────────────────────
 
@@ -315,7 +316,9 @@ export default function CareerGuidePage() {
 
   const [messages, setMessages] = useState<CGMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [conversations, setConversations] = useState<CGConversation[]>([]);
+  const [conversations, setConversations] = useState<CGConversation[]>(() => {
+    return getCached<CGConversation[]>("cg_conversations", 180_000) || [];
+  });
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [language, setLanguage] = useState("auto");
@@ -448,7 +451,9 @@ export default function CareerGuidePage() {
   const loadConversations = async () => {
     try {
       const res = await axiosAPI.get("/career-guide/conversations");
-      setConversations(res.data.conversations ?? res.data ?? []);
+      const list = res.data.conversations ?? res.data ?? [];
+      setConversations(list);
+      setCache("cg_conversations", list);
     } catch {
       // silently fail
     }
@@ -523,7 +528,11 @@ export default function CareerGuidePage() {
     e.stopPropagation();
     try {
       await axiosAPI.delete(`/career-guide/conversations/${id}`);
-      setConversations((prev) => prev.filter((c) => c.id !== id));
+      setConversations((prev) => {
+        const next = prev.filter((c) => c.id !== id);
+        setCache("cg_conversations", next);
+        return next;
+      });
       if (conversationId === id) {
         startNewChat();
       } else {

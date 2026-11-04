@@ -26,25 +26,43 @@ import {
 } from "@/components/animate-ui/icons";
 import { MessageSquare, ArrowUpRight } from "lucide-react";
 import { FullPageSkeleton } from "@/components/skeletons";
+import { getCached, setCache } from "@/lib/clientCache";
 
 export default function Dashboard() {
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  const [stats, setStats] = useState({
-    totalResumes: 0,
-    totalJobs: 0,
-    activeAgents: 0,
-    activeRoadmaps: 0,
-    profileCompleteness: 0,
-    placementReadiness: 84,
+  const [stats, setStats] = useState(() => {
+    const cached = getCached<any>("dashboard_cache", 180_000);
+    return cached?.stats || {
+      totalResumes: 0,
+      totalJobs: 0,
+      activeAgents: 0,
+      activeRoadmaps: 0,
+      profileCompleteness: 0,
+      placementReadiness: 84,
+    };
   });
-  const [recentResumes, setRecentResumes] = useState<any[]>([]);
-  const [recentSchedules, setRecentSchedules] = useState<any[]>([]);
-  const [latestRoadmap, setLatestRoadmap] = useState<any | null>(null);
-  const [userProfile, setUserProfile] = useState<any | null>(null);
+  const [recentResumes, setRecentResumes] = useState<any[]>(() => {
+    const cached = getCached<any>("dashboard_cache", 180_000);
+    return cached?.recentResumes || [];
+  });
+  const [recentSchedules, setRecentSchedules] = useState<any[]>(() => {
+    const cached = getCached<any>("dashboard_cache", 180_000);
+    return cached?.recentSchedules || [];
+  });
+  const [latestRoadmap, setLatestRoadmap] = useState<any | null>(() => {
+    const cached = getCached<any>("dashboard_cache", 180_000);
+    return cached?.latestRoadmap || null;
+  });
+  const [userProfile, setUserProfile] = useState<any | null>(() => {
+    const cached = getCached<any>("dashboard_cache", 180_000);
+    return cached?.userProfile || null;
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    return !getCached<any>("dashboard_cache", 180_000);
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -58,7 +76,9 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      setLoading(true);
+      if (!getCached("dashboard_cache", 180_000)) {
+        setLoading(true);
+      }
 
       const [resumesRes, schedulesRes, roadmapsRes, profileRes] = await Promise.all([
         axiosAPI.get("/resume/all").catch(() => ({ data: { resumes: [] } })),
@@ -96,19 +116,32 @@ export default function Dashboard() {
       if (roadmaps.length > 0) readiness += 8;
       readiness = Math.min(98, Math.max(50, readiness));
 
-      setStats({
+      const calculatedStats = {
         totalResumes: resumes.length,
         totalJobs: totalJobsDiscovered,
         activeAgents: activeCount,
         activeRoadmaps: roadmaps.length,
         profileCompleteness: completeness,
         placementReadiness: readiness,
-      });
+      };
 
-      setRecentResumes(resumes.slice(0, 5));
-      setRecentSchedules(schedules.slice(0, 3));
-      setLatestRoadmap(roadmaps[0] || null);
+      const slicedResumes = resumes.slice(0, 5);
+      const slicedSchedules = schedules.slice(0, 3);
+      const topRoadmap = roadmaps[0] || null;
+
+      setStats(calculatedStats);
+      setRecentResumes(slicedResumes);
+      setRecentSchedules(slicedSchedules);
+      setLatestRoadmap(topRoadmap);
       setUserProfile(profile);
+
+      setCache("dashboard_cache", {
+        stats: calculatedStats,
+        recentResumes: slicedResumes,
+        recentSchedules: slicedSchedules,
+        latestRoadmap: topRoadmap,
+        userProfile: profile,
+      });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {

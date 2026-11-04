@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon --watch .env --watch src src/index.js",
     "start": "node src/index.js",
-    "build": "prisma generate",
+    "build": "npx prisma generate",
     "postinstall": "prisma generate"
   },
   "keywords": [],

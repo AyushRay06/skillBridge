@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "prisma generate",
+  "buildCommand": "npx prisma generate",
   "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
     {

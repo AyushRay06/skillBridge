@@ -6,7 +6,7 @@ import prisma from "../lib/prisma.js";
 import { parseJsonField } from "../lib/helpers.js";
 
 const ai = new OpenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY || "not-configured",
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
 

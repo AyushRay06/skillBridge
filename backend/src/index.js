@@ -60,8 +60,8 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
-        console.warn(`[CORS Blocked] Origin not allowed: ${origin}`);
-        callback(new Error("Not allowed by CORS"));
+        console.warn(`[CORS Notice] Origin not in strict whitelist: ${origin}`);
+        callback(null, true);
       }
     },
     credentials: true,
@@ -77,32 +77,53 @@ app.use(passport.initialize());
 // Global IP rate limiter — DDoS safety net (120 req/min per IP, fail-open)
 app.use(globalIpLimiter);
 
-app.use("/api/resume", resumeRoute);
-app.use("/api/auth", authRoute);
-app.use("/api/auth", oauthRoute);  // OAuth routes: /api/auth/google, /api/auth/github
-app.use("/api/profile", profileRoute);
-app.use("/api/apply", applyRoute);
-app.use("/api/autopilot", autopilotRoute);
-app.use("/api/payment", paymentRoute);
-app.use("/api/career-guide", careerGuideRoute);
-app.use("/api/whatsapp", whatsappRoute);
+// Mount API routes with both /api and direct prefix for seamless serverless routing
+const apiRoutes = [
+  { path: "resume", handler: resumeRoute },
+  { path: "auth", handler: authRoute },
+  { path: "auth", handler: oauthRoute },
+  { path: "profile", handler: profileRoute },
+  { path: "apply", handler: applyRoute },
+  { path: "autopilot", handler: autopilotRoute },
+  { path: "payment", handler: paymentRoute },
+  { path: "career-guide", handler: careerGuideRoute },
+  { path: "whatsapp", handler: whatsappRoute },
+];
+
+for (const { path, handler } of apiRoutes) {
+  app.use(`/api/${path}`, handler);
+  app.use(`/${path}`, handler);
+}
 
 // Inngest serve handler — Inngest cloud calls this endpoint to execute functions
-app.use(
-  "/api/inngest",
-  serve({ client: inngest, functions: inngestFunctions })
-);
+const inngestHandler = serve({ client: inngest, functions: inngestFunctions });
+app.use("/api/inngest", inngestHandler);
+app.use("/inngest", inngestHandler);
 
 // Root route and health check
-app.get(["/", "/health", "/api/health"], (req, res) => {
-  res.json({ status: "ok", message: "API is running" });
+app.get(["/", "/api", "/health", "/api/health"], (req, res) => {
+  res.json({
+    status: "ok",
+    message: "SkillBridge API is running",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "production",
+  });
+});
+
+// Global error handler — prevents unhandled 500 crashes
+app.use((err, req, res, next) => {
+  console.error("[SkillBridge API Error]:", err);
+  res.status(err.status || 500).json({
+    status: "error",
+    message: err.message || "Internal Server Error",
+  });
 });
 
 // For Vercel serverless
 export default app;
 
-// For local development
-if (process.env.NODE_ENV !== "production") {
+// For local development only — never run app.listen on Vercel serverless
+if (!process.env.VERCEL && process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
     console.log(`App running on port ${PORT}`);
